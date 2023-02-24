@@ -27,9 +27,11 @@ class DailyAdapter(var dailyList: List<Daily>, var context: Context) :
 
             Glide.with(context).load(Utils.getIconUrl(current.weather[0].icon))
                 .into(holder.binding.iconTemp)
+
             holder.binding.tvDescrptionDaily.text = current.weather[0].description
             holder.binding.tvMaxTemp.text = current.temp.max.toString() + Constants.KELVIN
             holder.binding.tvMinTemp.text = current.temp.min.toString() + Constants.KELVIN
+
         if (position == 0) {
             holder.binding.tvDateDaily.text =""
             holder.binding.tvNameDay.text = "Tomorrow"
