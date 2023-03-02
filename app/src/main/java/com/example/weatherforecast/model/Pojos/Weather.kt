@@ -1,4 +1,8 @@
 package com.example.weatherforecast.model.Pojos
+
+import androidx.room.Entity
+
+@Entity(primaryKeys = ["lat", "lon"])
 data class Welcome (
     val lat: Double,
     val lon: Double,
@@ -6,7 +10,9 @@ data class Welcome (
     val timezone_offset: Long,
     val current: Current,
     val hourly: List<Current>,
-    val daily: List<Daily>
+    val daily: List<Daily>,
+    var isCurrent:Boolean?,
+    var isFavorite:Boolean?
 )
 
 data class Current (

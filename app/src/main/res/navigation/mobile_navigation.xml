@@ -13,13 +13,44 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.weatherforecast.ui.dashboard.DashboardFragment"
+        android:name="com.example.weatherforecast.ui.dashboard.SettingsFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_navigation_dashboard_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.weatherforecast.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.weatherforecast.ui.map.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard" />
+        <argument
+            android:name="isSettings"
+            app:argType="boolean" />
+        <argument
+            android:name="isFav"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_mapsFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.weatherforecast.ui.favorites.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+    </fragment>
 </navigation>

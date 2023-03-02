@@ -1,24 +1,16 @@
 package com.example.weatherforecast
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.Settings
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Toast
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weatherforecast.databinding.ActivityMainBinding
-import com.example.weatherforecast.model.Pojos.Constants
-import com.example.weatherforecast.ui.home.HomeViewModel
-import com.example.weatherforecast.ui.home.HomeViewModelFactory
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,8 +36,21 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
+        navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
+           override fun onDestinationChanged(
+                navController: NavController,
+                navDestination: NavDestination,
+                bundle: Bundle?
+            ) {
+                if (navDestination.id == R.id.navigation_dashboard||navDestination.id==R.id.mapsFragment) {
+                    navView.visibility = View.GONE
+                } else {
+                    navView.visibility = View.VISIBLE
+                }
+            }
+        })
     }
+
 
 
 }

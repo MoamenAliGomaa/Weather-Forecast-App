@@ -8,12 +8,17 @@
 
     <item
         android:id="@+id/navigation_dashboard"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_dashboard" />
+        android:icon="@drawable/settings_48px"
+        android:title="@string/settings" />
 
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_notifications" />
+    <item
+        android:id="@+id/favoritesFragment"
+        android:icon="@drawable/favorite_48px"
+        android:title="@string/title_favorites" />
+
 
 </menu>

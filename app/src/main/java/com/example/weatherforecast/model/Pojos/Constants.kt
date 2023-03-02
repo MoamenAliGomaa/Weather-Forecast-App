@@ -6,7 +6,7 @@ import java.util.*
 object  Constants {
     const val LANG_AR = "ar"
     const val LANG_EN = "en"
-    const val APPID = "bec88e8dd2446515300a492c3862a10e"
+    const val APPID = "bbcb13e1d448621ffd8e565701972f6d"
     const val UNITS_CELSIUS="metric"
     const val UNITS_FAHRENHEIT="imperial"
     const val UNITS_DEFAULT="default"
@@ -16,6 +16,8 @@ object  Constants {
     const val KELVIN="\u212A"
     const val MBAR="mbar"
     const val WINDSPEED="Km/h"
+    const val WINDSPEEDARABIC="ك/س"
+    const val MBARARABIC="مللي بار"
 
 
 }

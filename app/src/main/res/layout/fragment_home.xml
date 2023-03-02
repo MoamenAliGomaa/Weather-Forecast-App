@@ -230,6 +230,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:id="@+id/tvNextHour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -247,6 +248,7 @@
             </androidx.recyclerview.widget.RecyclerView>
 
             <TextView
+                android:id="@+id/tvNextDays"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
