@@ -28,14 +28,9 @@ import java.util.*
 
 
 class NotificationsFragment : Fragment() {
-    lateinit var timePicker: TimePicker
-    lateinit var timePickerDialog: TimePickerDialog
 
-    val RQS_1 = 1
     private var _binding: FragmentNotificationsBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -54,57 +49,12 @@ class NotificationsFragment : Fragment() {
             AlertDialogFragment().show(
                 childFragmentManager, AlertDialogFragment.TAG)
         }
-//        binding.startSetDialog.setOnClickListener(View.OnClickListener {
-//            binding.alarmprompt.setText("")
-//            openTimePickerDialog(false)
-//        })
 
 
 
         return root
     }
-//    private fun openTimePickerDialog(is24r: Boolean) {
-//        val calendar: Calendar = Calendar.getInstance()
-//        timePickerDialog = TimePickerDialog(
-//            requireContext(),
-//            onTimeSetListener,
-//            calendar.get(Calendar.HOUR_OF_DAY),
-//            calendar.get(Calendar.MINUTE),
-//            is24r
-//        )
-//        timePickerDialog.setTitle("Set Alarm Time")
-//        timePickerDialog.show()
-//    }
-//    var onTimeSetListener =
-//        OnTimeSetListener { view, hourOfDay, minute ->
-//            val calNow = Calendar.getInstance()
-//            val calSet = calNow.clone() as Calendar
-//            calSet[Calendar.HOUR_OF_DAY] = hourOfDay
-//            calSet[Calendar.MINUTE] = minute
-//            calSet[Calendar.SECOND] = 0
-//            calSet[Calendar.MILLISECOND] = 0
-//            if (calSet.compareTo(calNow) <= 0) {
-//                //Today Set time passed, count to tomorrow
-//                calSet.add(Calendar.DATE, 1)
-//            }
-//            setAlarm(calSet)
-//        }
-//    private fun setAlarm(targetCal: Calendar) {
-//        binding.alarmprompt.setText(
-//            """
-//
-//
-//            ***
-//            Alarm is set@ ${targetCal.time}
-//            ***
-//
-//            """.trimIndent()
-//        )
-//        val intent = Intent(requireContext(), AlarmReciver::class.java)
-//        val pendingIntent = PendingIntent.getBroadcast(requireContext(), RQS_1, intent, FLAG_IMMUTABLE)
-//        val alarmManager = getSystemService(requireContext(),AlarmManager::class.java)
-//        alarmManager!![AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
-//    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     fun canDrawOverApps(){
         if (!Settings.canDrawOverlays(requireContext())) {
