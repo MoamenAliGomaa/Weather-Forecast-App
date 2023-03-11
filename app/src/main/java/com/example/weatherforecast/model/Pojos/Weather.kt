@@ -1,6 +1,9 @@
 package com.example.weatherforecast.model.Pojos
 
+import android.text.format.Time
 import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(primaryKeys = ["lat", "lon"])
 data class Welcome (
@@ -12,8 +15,24 @@ data class Welcome (
     val hourly: List<Current>,
     val daily: List<Daily>,
     var isCurrent:Boolean?,
-    var isFavorite:Boolean?
+    var isFavorite:Boolean?,
+    val minutely: List<Minutely>,
+    val alerts: List<Alert>?=null
 )
+//@Entity(primaryKeys = ["lat", "lon"])
+//data class WelcomeCurrent (
+//    val lat: Double,
+//    val lon: Double,
+//    val timezone: String,
+//    val timezone_offset: Long,
+//    val current: Current,
+//    val hourly: List<Current>,
+//    val daily: List<Daily>,
+//    var isCurrent:Boolean?,
+//    var isFavorite:Boolean?,
+//    val minutely: List<Minutely>,
+//    val alerts: List<Alert>?=null
+//)
 
 data class Current (
     val dt: Long,
@@ -40,6 +59,7 @@ data class Rain (
 )
 
 data class Weather (
+
     val id: Long,
     val main: Main,
     val description: String,
@@ -74,6 +94,7 @@ data class Daily (
     val uvi: Double,
     val rain: Double? = null,
     val snow: Double? = null
+
 )
 
 data class FeelsLike (
@@ -81,6 +102,7 @@ data class FeelsLike (
     val night: Double,
     val eve: Double,
     val morn: Double
+
 )
 
 data class Temp (
@@ -90,9 +112,48 @@ data class Temp (
     val night: Double,
     val eve: Double,
     val morn: Double
+
 )
 
 data class Minutely (
     val dt: Long,
     val precipitation:Long
 )
+
+
+
+
+
+
+
+
+enum class Description {
+    BrokenClouds,
+    ClearSky,
+    FewClouds,
+    LightSnow,
+    OvercastClouds,
+    ScatteredClouds,
+    Snow
+}
+
+enum class Icon {
+    The01D,
+    The01N,
+    The02N,
+    The03N,
+    The04D,
+    The04N,
+    The13D
+}
+@Entity(tableName = "Alert")
+data class Alert(
+    @PrimaryKey(autoGenerate = true)
+    val id:Int?=null,
+   var startTime: Long,
+    var endTime:Long,
+    var lat:Double,
+    var lon:Double,
+    var cityName:String?=null
+    )
+

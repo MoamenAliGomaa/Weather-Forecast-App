@@ -1,20 +1,17 @@
 package com.example.weatherforecast.ui.favorites
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.weatherforecast.databinding.FavoriteRowBinding
-import com.example.weatherforecast.databinding.WeatherHourlyItemBinding
-import com.example.weatherforecast.model.Pojos.Constants
-import com.example.weatherforecast.model.Pojos.Current
-import com.example.weatherforecast.model.Pojos.Settings
 import com.example.weatherforecast.model.Pojos.Welcome
 import com.example.weatherforecast.model.Utils
 
-
-class FavoritesAdatpter(var welcomeList:List<Welcome>, var context: Context):
+private const val TAG = "FavoritesAdatpter"
+class FavoritesAdatpter(var welcomeList: List<Welcome>?, var context: Context, val onClick:(Welcome)->Unit):
     RecyclerView.Adapter<FavoritesAdatpter.ViewHolder>(){
     lateinit var binding: FavoriteRowBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,14 +21,18 @@ class FavoritesAdatpter(var welcomeList:List<Welcome>, var context: Context):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var current=welcomeList[position]
-        holder.binding.tvCityNameFavorite.text=Utils.getAddressEnglish(context,current.lat,current.lon)
+        Log.i(TAG, "onBindViewHolder: "+welcomeList?.size)
+        var current= welcomeList?.get(position)
+        holder.binding.tvCityNameFavorite.text=Utils.getAddressEnglish(context, current?.lat,
+            current?.lon
+        )
         holder.binding.btnDelete.setOnClickListener {
-            //todo delete from data base
+Toast.makeText(context,"clicke",Toast.LENGTH_SHORT).show()
+                onClick(current!!)
+
         }
     }
 
-    override fun getItemCount(): Int = welcomeList.size
-
+    override fun getItemCount(): Int = welcomeList?.size!!
     inner class ViewHolder(var binding: FavoriteRowBinding): RecyclerView.ViewHolder(binding.root)
 }

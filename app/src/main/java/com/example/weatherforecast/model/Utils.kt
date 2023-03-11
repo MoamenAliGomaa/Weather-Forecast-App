@@ -2,9 +2,12 @@ package com.example.weatherforecast.model
 
 import android.content.Context
 import android.location.Geocoder
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.random.Random.Default.nextInt
 
 private const val TAG = "Utils"
 object Utils {
@@ -26,6 +29,18 @@ object Utils {
     fun formatDate(dt:Long):String{
         val date= Date(dt * 1000L)
         val sdf = SimpleDateFormat("dd-MM-yyyy")
+        return sdf.format(date)
+
+    }
+    fun formatDateAlert(dt:Long):String{
+        val date= Date(dt )
+        val sdf = SimpleDateFormat("dd-MM-yyyy")
+        return sdf.format(date)
+
+    }
+    fun formatTimeAlert(dt:Long):String{
+        val date = Date(dt)
+        val sdf = SimpleDateFormat("HH:mm")
         return sdf.format(date)
 
     }
@@ -86,5 +101,34 @@ object Utils {
         val geocoder= Geocoder(context,Locale("ar"))
         val address =geocoder.getFromLocation(lat,lon,1)
         return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
+    }
+    fun getCurrentDate(): String {
+        val currentTime = Calendar.getInstance().time
+        val sdf = SimpleDateFormat("dd-MM-yyyy")
+        return sdf.format(currentTime)
+    }
+    fun getCurrentTime(): String {
+        val currentTime = Calendar.getInstance().time
+        val sdf = SimpleDateFormat("HH:mm")
+        return sdf.format(currentTime)
+    }
+    fun getCurrentDatePlusOne(): String {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, 1)
+        val tomorrow = calendar.time
+        val sdf = SimpleDateFormat("dd-MM-yyyy")
+        return sdf.format(tomorrow)
+    }
+    fun pickedDateFormatDate(dt:Date): String {
+        val sdf = SimpleDateFormat("dd-MM-yyyy")
+        return sdf.format(dt)
+    }
+    fun pickedDateFormatTime(dt:Date): String {
+        val sdf = SimpleDateFormat("HH:mm")
+        return sdf.format(dt)
+    }
+
+    fun generateRandomNumber():Int{
+        return nextInt()
     }
 }

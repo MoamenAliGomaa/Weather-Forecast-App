@@ -26,10 +26,10 @@ class DailyAdapter(var dailyList: List<Daily>, var context: Context,var settings
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var current = dailyList[position]
 
-            Glide.with(context).load(Utils.getIconUrl(current.weather[0].icon))
+            Glide.with(context).load(Utils.getIconUrl(current.weather[0].icon.toString()))
                 .into(holder.binding.iconTemp)
 
-            holder.binding.tvDescrptionDaily.text = current.weather[0].description
+            holder.binding.tvDescrptionDaily.text = current.weather[0].description.toString()
             if(settings?.unit==Constants.UNITS_DEFAULT) {
                 if (settings?.lang==Constants.LANG_AR) {
                     holder.binding.tvMaxTemp.text =

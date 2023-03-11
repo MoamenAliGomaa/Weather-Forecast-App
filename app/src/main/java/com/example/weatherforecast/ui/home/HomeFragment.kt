@@ -74,7 +74,8 @@ lifecycleScope.launch {
             }
             is ApiState.Success -> {
                 progressDialog.hide()
-                Glide.with(requireContext()).load(Utils.getIconUrl(result.data.current.weather[0].icon))
+
+                Glide.with(requireContext()).load(Utils.getIconUrl(result.data.current.weather[0].icon.toString()))
                     .apply(
                         RequestOptions().override(400, 300)
                             .placeholder(R.drawable.ic_launcher_background)
@@ -100,7 +101,7 @@ lifecycleScope.launch {
                             "Real feel : " + result.data.current.feels_like.toString() + Constants.FAHRENHEIT
                     }
                     binding.tvHumidity.text = "Humidity : " + result.data.current.humidity.toString() + "%"
-                    binding.tvWeather.text = result.data.current.weather[0].description
+                    binding.tvWeather.text = result.data.current.weather[0].description.toString()
                     binding.tvDay.text = Utils.formatday(result.data.current.dt)
                     binding.tvWindspeed.text =
                         "Wind Speed : " + result.data.current.wind_speed.toString() + Constants.WINDSPEED
@@ -133,7 +134,7 @@ lifecycleScope.launch {
                     }
                     binding.tvHumidity.text =
                         "الرطوبة : " + Utils.englishNumberToArabicNumber(result.data.current.humidity.toString()) + "%"
-                    binding.tvWeather.text = result.data.current.weather[0].description
+                    binding.tvWeather.text = result.data.current.weather[0].description.toString()
                     binding.tvDay.text = Utils.formatdayArabic(result.data.current.dt)
                     binding.tvWindspeed.text =
                         "سرعة الرياح : " + Utils.englishNumberToArabicNumber(result.data.current.wind_speed.toString()) + Constants.WINDSPEEDARABIC

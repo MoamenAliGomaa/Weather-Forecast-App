@@ -10,10 +10,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.weatherforecast.R
+import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.Settings
+import com.example.weatherforecast.ui.dashboard.SettingsFragmentDirections
+import com.example.weatherforecast.ui.notifications.AlertDialogFragment
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -79,11 +86,23 @@ private var settings: Settings?=null
 
                 }
             }
+        if(arg.isAlert)
+        {
+            getCurrentWeatherBtn.text="Set Alert"
+            getCurrentWeatherBtn.setOnClickListener {
+                var alertSettings=mapsViewModel.getAlertSettings()
+                alertSettings?.lat=marker?.position!!.latitude
+                alertSettings?.lon=marker?.position!!.longitude
+                mapsViewModel.saveAlertSettings(alertSettings!!)
+                getActivity()?.onBackPressed()
+            }
         }
-    override fun onMapReady(googleMap: GoogleMap) {
 
-        val sydney = LatLng(-34.0, 151.0)
-       marker=googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        val sydney = LatLng(30.6043, 32.2723)
+       marker=googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in ismailia"))
         googleMap.setOnMapClickListener {
          marker?.position=it
             marker?.title=it.toString()

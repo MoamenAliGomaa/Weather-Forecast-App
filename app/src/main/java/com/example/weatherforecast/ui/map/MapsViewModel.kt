@@ -1,7 +1,9 @@
 package com.example.weatherforecast.ui.map
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.*
+import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.Settings
 import com.example.weatherforecast.model.Repository
 import kotlinx.coroutines.flow.catch
@@ -26,12 +28,18 @@ class MapsViewModel(var context: Context) : ViewModel() {
         }
     }
     suspend fun insertFavorite(lat:Double,lon:Double){
-        repository.getCurrentWeather(lat=lat.toString(),lon=lon.toString()).catch {  }.collect{
+        repository.getCurrentWeather(lat=lat.toString(),lon=lon.toString()).catch {e->Toast.makeText(context,"Failed to fetch data $e",Toast.LENGTH_SHORT).show()
+        }.collect{
             it.isFavorite=true
-            repository.insertFavoriteWeather(it)
+            repository.insertWeather(it)
         }
     }
-
+    fun saveAlertSettings(alertSettings: AlertSettings){
+        repository.saveAlertSettings(alertSettings)
+    }
+    fun getAlertSettings(): AlertSettings?{
+        return repository.getAlertSettings()
+    }
 }
 
 

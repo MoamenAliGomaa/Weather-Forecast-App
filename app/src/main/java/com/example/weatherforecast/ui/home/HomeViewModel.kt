@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.example.weatherforecast.model.Pojos.ApiState
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Pojos.Settings
-import com.example.weatherforecast.model.Pojos.Welcome
+
 import com.example.weatherforecast.model.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -16,7 +16,7 @@ private const val TAG = "HomeViewModel"
 class HomeViewModel(var context: Context) : ViewModel() {
     private var repository: Repository
     private var _welcomeCurrentWeather: MutableStateFlow<ApiState>
-    lateinit var welcomeCurrentWeather: StateFlow<ApiState>
+     var welcomeCurrentWeather: StateFlow<ApiState>
 
     init {
         repository = Repository.getInstance(context)
@@ -32,7 +32,7 @@ class HomeViewModel(var context: Context) : ViewModel() {
     )
     {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
 
                 repository.getCurrentWeather(
                     lat = lat,
@@ -40,10 +40,14 @@ class HomeViewModel(var context: Context) : ViewModel() {
                     lang = lang,
                     units = units
                 ).catch { e->_welcomeCurrentWeather.value=ApiState.Fail(e) }.collect{
-                    _welcomeCurrentWeather.value=ApiState.Success(it)
+                    apiWeather->
+                    _welcomeCurrentWeather.value=ApiState.Success(apiWeather)
+
                 }
+
         }
     }
+
 
     fun getSettings(): Settings? {
         return repository.getSettings()
@@ -51,12 +55,12 @@ class HomeViewModel(var context: Context) : ViewModel() {
 
 }
 
-
 class HomeViewModelFactory(val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             HomeViewModel(context) as T
-        } else {
+        }
+        else {
             throw java.lang.IllegalArgumentException("View modle class not found")
         }
     }

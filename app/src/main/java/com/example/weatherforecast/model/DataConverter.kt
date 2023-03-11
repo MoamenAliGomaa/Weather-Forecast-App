@@ -1,9 +1,7 @@
 package com.example.weatherforecast.model
 
 import androidx.room.TypeConverter
-import com.example.weatherforecast.model.Pojos.Current
-import com.example.weatherforecast.model.Pojos.Daily
-import com.example.weatherforecast.model.Pojos.Weather
+import com.example.weatherforecast.model.Pojos.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -85,5 +83,43 @@ class DataConverter {
         val gson = Gson()
         val type: Type = object : TypeToken<Current>() {}.type
         return gson.fromJson(currentStr, type)
+    }
+    @TypeConverter
+    fun fromAlertList(alert: List<Alert?>?): String? {
+        if (alert == null) {
+            return null
+        }
+        val gson = Gson()
+        val type: Type = object : TypeToken<List<Alert?>?>() {}.type
+        return gson.toJson(alert, type)
+    }
+
+    @TypeConverter
+    fun toAlertList(alertString: String?): List<Alert>? {
+        if (alertString == null) {
+            return null
+        }
+        val gson = Gson()
+        val type: Type = object : TypeToken<List<Alert?>?>() {}.type
+        return gson.fromJson(alertString, type)
+    }
+    @TypeConverter
+    fun fromMinList(minutely: List<Minutely?>?): String? {
+        if (minutely == null) {
+            return null
+        }
+        val gson = Gson()
+        val type: Type = object : TypeToken<List<Minutely?>?>() {}.type
+        return gson.toJson(minutely, type)
+    }
+
+    @TypeConverter
+    fun toMinList(minutelyString: String?): List<Minutely>? {
+        if (minutelyString == null) {
+            return null
+        }
+        val gson = Gson()
+        val type: Type = object : TypeToken<List<Minutely?>?>() {}.type
+        return gson.fromJson(minutelyString, type)
     }
 }

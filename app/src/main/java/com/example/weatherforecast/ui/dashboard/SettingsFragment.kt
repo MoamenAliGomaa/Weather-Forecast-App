@@ -53,7 +53,7 @@ class SettingsFragment : Fragment() {
 
 
         binding.radioButtonMap.setOnClickListener {
-            val action=SettingsFragmentDirections.actionNavigationDashboardToMapsFragment(true,false)
+            val action=SettingsFragmentDirections.actionNavigationDashboardToMapsFragment(true,false,false)
             Navigation.findNavController(it).navigate(action)
         }
         return root

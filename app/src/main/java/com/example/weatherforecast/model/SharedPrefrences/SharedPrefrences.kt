@@ -3,6 +3,7 @@ package com.example.weatherforecast.model.SharedPrefrences
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.Settings
 import com.google.gson.Gson
 
@@ -11,6 +12,7 @@ object SharedManger{
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: Editor
     const val SETTINGS = "SETTINGS"
+    const val ALERTSETTINGS = "ALERTSETTINGS"
    fun init(context:Context) {
        sharedPreferences =context.getSharedPreferences(SHARE_KEY, Context.MODE_PRIVATE)
 
@@ -29,5 +31,18 @@ object SharedManger{
         }
         return settings
     }
+    fun saveAlertSettings(alertSettings: AlertSettings){
+        editor= sharedPreferences.edit()
+        editor.putString(ALERTSETTINGS,Gson().toJson(alertSettings))
+        editor.commit()
+    }
+    fun getAlertSettings():AlertSettings?{
+        val settingsStr = sharedPreferences.getString(ALERTSETTINGS, null)
+        var alertSettings: AlertSettings? = AlertSettings()
+        if (settingsStr != null) {
+            alertSettings = Gson().fromJson(settingsStr, AlertSettings::class.java)
 
+        }
+        return alertSettings
+    }
 }

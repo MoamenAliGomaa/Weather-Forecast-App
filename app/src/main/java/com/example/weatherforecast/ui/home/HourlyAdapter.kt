@@ -26,7 +26,7 @@ class HourlyAdapter(var hourlyList:List<Current>, var context: Context,var setti
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var current=hourlyList[position]
 
-        Glide.with(context).load(Utils.getIconUrl(current.weather[0].icon))
+        Glide.with(context).load(Utils.getIconUrl(current.weather[0].icon.toString()))
             .into(holder.binding.iconTemp)
         if (settings?.lang==Constants.LANG_EN) {
             holder.binding.tvHourDay.text = Utils.formatTime(current.dt)
@@ -39,7 +39,7 @@ class HourlyAdapter(var hourlyList:List<Current>, var context: Context,var setti
             holder.binding.tvHumidityHour.text = current.humidity.toString() + "%"
             holder.binding.tvWindSpeedHour.text =
                 current.wind_speed.toString() + Constants.WINDSPEED
-            holder.binding.tvDescription.text = current.weather[0].description
+            holder.binding.tvDescription.text = current.weather[0].description.toString()
         }
         if (settings?.lang==Constants.LANG_AR)
         {
@@ -53,7 +53,7 @@ class HourlyAdapter(var hourlyList:List<Current>, var context: Context,var setti
             holder.binding.tvHumidityHour.text = Utils.englishNumberToArabicNumber(current.humidity.toString()) + "%"
             holder.binding.tvWindSpeedHour.text =
               Utils.englishNumberToArabicNumber(current.wind_speed.toString() )  + Constants.WINDSPEEDARABIC
-            holder.binding.tvDescription.text = current.weather[0].description
+            holder.binding.tvDescription.text = current.weather[0].description.toString()
 
         }
     }

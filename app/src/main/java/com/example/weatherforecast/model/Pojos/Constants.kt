@@ -18,6 +18,9 @@ object  Constants {
     const val WINDSPEED="Km/h"
     const val WINDSPEEDARABIC="ك/س"
     const val MBARARABIC="مللي بار"
+    const val Alert="Alert"
+    val ACTION_SNOOZE="Dismiss"
+    val EXTRA_NOTIFICATION_ID="NOTIFICATION_ID"
 
 
 }
