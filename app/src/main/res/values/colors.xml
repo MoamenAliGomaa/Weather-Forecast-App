@@ -13,4 +13,6 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="shimmer_color">#a2878787</color>
+    <color name="row_color_bule_light">#D2DFFF</color>
+    <color name="string_sec_color">#494343</color>
 </resources>

@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.databinding.FragmentFavoritesBinding
 import com.example.weatherforecast.model.Pojos.LocalDataState
+import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.ui.dashboard.SettingsFragmentDirections
 import kotlinx.coroutines.launch
 
 private const val TAG = "FavoritesFragment"
@@ -35,6 +37,17 @@ class FavoritesFragment : Fragment() {
         val root: View = binding.root
         favoritesViewModel=ViewModelProvider(this,FavoritesViewModelFactory(requireContext())).get(FavoritesViewModel::class.java)
         favoritesViewModel.getFavoriteWeathers()
+        if (Utils.isOnline(requireContext()))
+        {
+            binding.btnAddToFavorites.visibility=View.VISIBLE
+
+        }
+        else
+        {
+            binding.btnAddToFavorites.isEnabled=false
+            binding.btnAddToFavorites.visibility=View.GONE
+
+        }
         binding.btnAddToFavorites.setOnClickListener{
             val action=
                 FavoritesFragmentDirections.actionFavoritesFragmentToMapsFragment(false,true,false)
@@ -59,14 +72,31 @@ class FavoritesFragment : Fragment() {
                     }
                     is LocalDataState.Success->{
                         progressDialog.hide()
-                        binding.rvFavorites.apply {
-
-                            adapter = FavoritesAdatpter(it.data,requireContext()){
-                                favoritesViewModel.deleteFavorite(it)
-                            }
-                            layoutManager = LinearLayoutManager(requireContext())
-                                .apply { orientation = RecyclerView.VERTICAL }
+                        if(it.data?.isEmpty()==true)
+                        {
+                            binding.rvFavorites.visibility=View.GONE
+                            binding.noFavHolerAnimation.visibility=View.VISIBLE
                         }
+                        else
+                        {
+                            binding.rvFavorites.visibility=View.VISIBLE
+                            binding.noFavHolerAnimation.visibility=View.GONE
+
+                            binding.rvFavorites.apply {
+                                adapter = FavoritesAdatpter(it.data,requireContext(),{
+                                    favoritesViewModel.deleteFavorite(it)
+                                },{
+                                    Navigation.findNavController(requireView()).navigate(
+                                        FavoritesFragmentDirections.actionFavoritesFragmentToNavigationHome().apply {
+                                          isComingFav=true
+                                            welcomFavObj=it
+                                        })
+                                   })
+                                layoutManager = LinearLayoutManager(requireContext())
+                                    .apply { orientation = RecyclerView.VERTICAL }
+                            }
+                        }
+
                     }
                 }
             }

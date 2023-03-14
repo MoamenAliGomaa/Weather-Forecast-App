@@ -30,16 +30,38 @@
     android:layout_height="match_parent"
     tools:context=".ui.notifications.FullScreenActivity">
 
-    <TextView
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationViewLoading"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="fitCenter"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/notification_full_screen"
+
+        />
+
+    <Button
+        android:id="@+id/btnDismissFullScreenIntent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="full screen"
-        android:textAlignment="center"
-        android:textSize="18sp"
+        android:layout_marginBottom="64dp"
+        android:text="Dismiss"
+        android:textColor="@color/main_color_2"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:backgroundTint="#80D2DFFF"
+        android:layout_marginTop="20dp"
+        android:elevation="20dp"
+        android:padding="10dp"
+        android:paddingRight="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_min="wrap" />
-
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+

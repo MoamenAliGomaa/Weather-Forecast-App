@@ -2,16 +2,10 @@ package com.example.weatherforecast.model
 
 import android.content.Context
 import android.util.Log
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.model.Pojos.*
 import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.database.WeatherDataBse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 private const val TAG = "Repository"
@@ -38,7 +32,9 @@ class Repository private constructor(var context: Context){
     suspend fun getCurrentWeather(lat: String?, lon: String?, lang:String=Constants.LANG_EN, units:String= Constants.UNITS_DEFAULT)=
         flow{
        emit(API.retrofitService.getCurrentWeather(lat = lat, lon =lon, lang =lang, units = units))
-    }
+    }.catch {
+            Log.e(TAG, "getCurrentWeather: "+this.toString() )
+        }
 
     //shared
     fun saveSettings(settings: Settings){
@@ -59,38 +55,28 @@ class Repository private constructor(var context: Context){
     }
     //room
 
-   suspend fun getCurrentWeatherDataBase() = room.getWeatherDao().getCurrentWeather()
-   fun getFavoriteWeathers() = room.getWeatherDao().getFavoriteWeathers()
+
+    suspend fun getFavoriteWeathers() = room.getWeatherDao().getFavoriteWeathers()
+
 
 
 
     suspend fun insertWeather( welcome: Welcome):Long{
-      return  room.getWeatherDao().insertWeather(welcome)
+        var l=room.getWeatherDao().insertWeather(welcome)
+        Log.e(TAG, "insertWeather: "+ l )
+      return  l
     }
 
 
     suspend fun deleteFavorite(welcome: Welcome){
         room.getWeatherDao().deleteFavorite(welcome)
     }
-    //    suspend fun updateCurrent(welcome: Welcome)
-//    {
-//        room.getWeatherDao().updateCurrent(welcome.lat,welcome.lon,welcome.timezone,welcome.timezone_offset,welcome.current,welcome.hourly,
-//            welcome.daily,welcome.isFavorite)
-//    }
-//    suspend fun insertOrUpdate(welcome: Welcome){
-//
-//        var currentList=getCurrentWeatherDataBase()
-//        if(currentList.isNullOrEmpty())
-//        {   welcome.isCurrent=true
-//            insertWeather(welcome)
-//        }
-//        else
-//        {
-//         updateCurrent(welcome)
-//        }
-//    }
+    suspend fun getCurrentWeatherDB()=room.getWeatherDao().getCurrentWeathers()
+    suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)= room.getWeatherDao().insertOrUpdateCurrentWeather(welcome)
     //alert room
     suspend fun insertAlert(alert: Alert)=room.alertDao().insertAlert(alert)
     suspend fun deleteAlert(alert: Alert)=room.alertDao().deleteAlert(alert)
     fun getAlerts()=room.alertDao().getAlerts()
+    fun getAlert(id: Long)=room.alertDao().getAlert(id!!)
+
 }

@@ -1,38 +1,26 @@
 package com.example.weatherforecast.model.Pojos
 
+import android.os.Parcelable
 import android.text.format.Time
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.util.Date
 
 @Entity(primaryKeys = ["lat", "lon"])
-data class Welcome (
+ class Welcome (
     val lat: Double,
     val lon: Double,
     val timezone: String,
     val timezone_offset: Long,
     val current: Current,
     val hourly: List<Current>,
-    val daily: List<Daily>,
-    var isCurrent:Boolean?,
+    val daily: List<Daily>?,
     var isFavorite:Boolean?,
-    val minutely: List<Minutely>,
+    val minutely: List<Minutely>?=null,
     val alerts: List<Alert>?=null
-)
-//@Entity(primaryKeys = ["lat", "lon"])
-//data class WelcomeCurrent (
-//    val lat: Double,
-//    val lon: Double,
-//    val timezone: String,
-//    val timezone_offset: Long,
-//    val current: Current,
-//    val hourly: List<Current>,
-//    val daily: List<Daily>,
-//    var isCurrent:Boolean?,
-//    var isFavorite:Boolean?,
-//    val minutely: List<Minutely>,
-//    val alerts: List<Alert>?=null
-//)
+):Serializable
+
 
 data class Current (
     val dt: Long,
@@ -146,14 +134,12 @@ enum class Icon {
     The04N,
     The13D
 }
-@Entity(tableName = "Alert")
-data class Alert(
-    @PrimaryKey(autoGenerate = true)
-    val id:Int?=null,
+@Entity(primaryKeys = ["startTime", "cityName"])
+class Alert(
    var startTime: Long,
     var endTime:Long,
     var lat:Double,
     var lon:Double,
-    var cityName:String?=null
-    )
+    var cityName:String
+    ):Serializable
 

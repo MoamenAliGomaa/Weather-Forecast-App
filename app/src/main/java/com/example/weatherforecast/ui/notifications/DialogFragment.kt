@@ -10,8 +10,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.TextView
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,7 +24,6 @@ import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Utils
 import com.example.weatherforecast.model.Utils.getCurrentDate
-import com.example.weatherforecast.model.Utils.getCurrentDatePlusOne
 import com.example.weatherforecast.model.Utils.getCurrentTime
 import com.google.gson.Gson
 import java.util.*
@@ -46,6 +47,12 @@ class AlertDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "DialogFragment"
     }
+
+    override fun onStart() {
+        super.onStart()
+        val window: Window? = dialog!!.window
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+    }
     @SuppressLint("IdleBatteryChargingConstraints")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -56,6 +63,8 @@ class AlertDialogFragment : DialogFragment() {
         _binding = AlertDialogFragmentBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        getDialog()?.requestWindowFeature(STYLE_NO_TITLE)
+        setCancelable(false)
 
         val notificationsViewModel =
             ViewModelProvider(this,NotificationsViewModelFactory(requireContext())).get(NotificationsViewModel::class.java)
@@ -63,9 +72,32 @@ class AlertDialogFragment : DialogFragment() {
         calendarStart=Calendar.getInstance()
         calenderEnd=Calendar.getInstance()
         binding.tvFromDate.text= getCurrentDate()
-        binding.tvToDate.text= getCurrentDatePlusOne()
+        binding.tvToDate.text= getCurrentDate()
         binding.tvFromTimePicker.text= getCurrentTime()
         binding.tvToTimePicker.text=getCurrentTime()
+        if(Utils.isOnline(requireContext()))
+        {
+            binding.btnMap.isEnabled=true
+            binding.btnSet.isEnabled=true
+        }
+        else
+
+        {
+            binding.btnMap.isEnabled=false
+            binding.btnSet.isEnabled=false
+            Toast.makeText(requireContext(),"Please enable your network connection ",Toast.LENGTH_SHORT).show()
+        }
+        if(alertSettings?.isALarm == true&&alertSettings.isNotification==false)
+        {
+         binding.radioButtonAlarm.isChecked=true
+        }
+        if(alertSettings?.isALarm == false && alertSettings.isNotification)
+        {
+            binding.radioButtonNotify.isChecked=true
+        }
+
+
+
         binding.tvFromTimePicker.setOnClickListener {
             pickDateTime(binding.tvFromDate,binding.tvFromTimePicker,calendarStart)
         }
@@ -83,6 +115,7 @@ class AlertDialogFragment : DialogFragment() {
 
 
         binding.btnSet.setOnClickListener {
+
             Log.e(TAGA, "onCreateView: start Date "+
                     Utils.formatDateAlert(calendarStart.timeInMillis)+" start time "+Utils.formatTimeAlert(calendarStart.timeInMillis)+
             " end date " +Utils.formatDateAlert(calenderEnd.timeInMillis)+" end time "+Utils.formatTimeAlert(calenderEnd.timeInMillis))
@@ -93,23 +126,45 @@ class AlertDialogFragment : DialogFragment() {
                 lon = alertSettings.lon,
                 cityName = Utils.getAddressEnglish(requireContext(),alertSettings!!.lat,alertSettings.lon)
             )
-            notificationsViewModel.insertAlert(alert)
-            Log.e(TAGA, "onCreateView: "+notificationsViewModel.getAlertSettings().toString())
+            if (alert.startTime<alert.endTime){
+                if (binding.radioButtonAlarm.isChecked)
+                {
+                    alertSettings?.isALarm=true
+                    alertSettings?.isNotification=false
+                }
+                if (binding.radioButtonNotify.isChecked){
+                    alertSettings?.isALarm=false
+                    alertSettings?.isNotification=true
+                }
+                notificationsViewModel.saveAlertSettings(alertSettings)
+                notificationsViewModel.insertAlert(alert)
+                Log.e(TAGA, "onCreateView: "+notificationsViewModel.getAlertSettings().toString())
 
-            val inputData = Data.Builder()
-            inputData.putString(Constants.Alert,  Gson().toJson(alert).toString() )
-            // Create a Constraints that defines when the task should run
-            // Create a Constraints that defines when the task should run
-            val myConstraints: Constraints = Constraints.Builder()
-                .setRequiresDeviceIdle(false)
-                .setRequiresCharging(false)
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
+                val inputData = Data.Builder()
+                inputData.putString(Constants.Alert,  Gson().toJson(alert).toString() )
 
-            val myWorkRequest= PeriodicWorkRequestBuilder<MyWorker>(1,TimeUnit.DAYS).setConstraints(myConstraints).setInputData(inputData.build()).addTag(Constants.Alert).build()
-            WorkManager.getInstance(requireContext()).enqueue(myWorkRequest)
+                // Create a Constraints that defines when the task should run
+                val myConstraints: Constraints = Constraints.Builder()
+                    .setRequiresDeviceIdle(false)
+                    .setRequiresCharging(false)
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+                Toast.makeText(context,Utils.formatTimeAlert(alert.startTime)+" "+Utils.formatTimeAlert(alert.endTime),Toast.LENGTH_SHORT).show()
 
-            dismiss()
+                    Toast.makeText(context,"Daily",Toast.LENGTH_SHORT).show()
+
+                    val myWorkRequest= PeriodicWorkRequestBuilder<MyWorker>(1,TimeUnit.DAYS).setConstraints(myConstraints).
+                    setInputData(inputData.build()).
+                    addTag(alert.startTime.toString()).
+                    build()
+                    WorkManager.getInstance(requireContext().applicationContext).enqueueUniquePeriodicWork(alert.startTime.toString(), ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest)
+
+                dismiss()
+            }
+            else{
+                Toast.makeText(context,"Please specify the end time of your alert",Toast.LENGTH_SHORT).show()
+
+            }
 
         }
         binding.btnCancel.setOnClickListener {
@@ -135,8 +190,9 @@ class AlertDialogFragment : DialogFragment() {
                 tvTime.text=Utils.pickedDateFormatTime(pickedDateTime.time)
                 calendar.time=pickedDateTime.time
 
-            }, startHour, startMinute, true).show()
+            }, startHour, startMinute, false).show()
         }, startYear, startMonth, startDay).show()
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.weatherforecast.ui.map
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.weatherforecast.model.Pojos.AlertSettings
@@ -30,6 +31,7 @@ class MapsViewModel(var context: Context) : ViewModel() {
     suspend fun insertFavorite(lat:Double,lon:Double){
         repository.getCurrentWeather(lat=lat.toString(),lon=lon.toString()).catch {e->Toast.makeText(context,"Failed to fetch data $e",Toast.LENGTH_SHORT).show()
         }.collect{
+            Log.e(TAG, "insertFavorite:  "+ it )
             it.isFavorite=true
             repository.insertWeather(it)
         }

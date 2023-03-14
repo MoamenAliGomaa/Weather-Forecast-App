@@ -19,6 +19,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.weatherforecast.R
 import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.Settings
+import com.example.weatherforecast.model.Utils
 import com.example.weatherforecast.ui.dashboard.SettingsFragmentDirections
 import com.example.weatherforecast.ui.notifications.AlertDialogFragment
 import com.google.android.gms.common.api.Status
@@ -35,6 +36,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 
 private const val TAG = "MapsFragment"
@@ -62,6 +64,7 @@ private var settings: Settings?=null
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         val arg:MapsFragmentArgs by navArgs()
+
         if(arg.isSettings) {
             getCurrentWeatherBtn.text = "Save"
             getCurrentWeatherBtn.setOnClickListener {
@@ -80,6 +83,7 @@ private var settings: Settings?=null
                 getCurrentWeatherBtn.text="save data"
                 getCurrentWeatherBtn.setOnClickListener {
                     lifecycleScope.launch{
+                        Log.e(TAG, "onViewCreated:  " +marker?.position!!.latitude+"  "+marker?.position!!.longitude )
                         mapsViewModel.insertFavorite(marker?.position!!.latitude,marker?.position!!.longitude)
                         Navigation.findNavController(it).navigate(R.id.favoritesFragment)
                     }
@@ -101,12 +105,12 @@ private var settings: Settings?=null
         }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        val sydney = LatLng(30.6043, 32.2723)
+        val sydney = LatLng(30.60, 32.27)
        marker=googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in ismailia"))
         googleMap.setOnMapClickListener {
          marker?.position=it
             marker?.title=it.toString()
-
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 5f))
         }
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
         val apiKey = getString(R.string.APIKey)

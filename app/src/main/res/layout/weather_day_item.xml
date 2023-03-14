@@ -11,8 +11,7 @@
         android:id="@+id/cvListNextDays"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#00FFFFFF"
-
+        android:backgroundTint="#D2DFFF"
         app:cardCornerRadius="20dp"
         app:cardElevation="5dp">
 

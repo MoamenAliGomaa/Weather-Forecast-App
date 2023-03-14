@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.*
 import com.example.weatherforecast.model.DataConverter
 import com.example.weatherforecast.model.Pojos.Alert
+import com.example.weatherforecast.model.Pojos.Current
 import com.example.weatherforecast.model.Pojos.Welcome
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 interface AlertDao {
     @Query("SELECT * From Alert")
     fun getAlerts(): Flow<List<Alert>>
-
+    @Query("SELECT * From Alert Where startTime=:id")
+    fun getAlert(id:Long): Flow<Alert>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlert(alert: Alert): Long
 
@@ -21,31 +23,32 @@ interface AlertDao {
 
 @Dao
 interface WeatherDao {
-    @Query("SELECT * FROM Welcome where isCurrent= true")
-    fun getCurrentWeather(): List<Welcome>?
 
+    //favorite
     @Query("SELECT * FROM Welcome where isFavorite= true")
-    fun getFavoriteWeathers(): Flow<List<Welcome>?>
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+   fun getFavoriteWeathers(): Flow<List<Welcome>?>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeather(welcome: Welcome): Long
-
     @Delete
     suspend fun deleteFavorite(welcome: Welcome):Int
-//
-//    @Query("UPDATE WelcomeCurrent SET lat = :lat ,lon = :lon,timezone = :timezone,timezone_offset= :timezone_offset,current = :current,hourly = :hourly ,daily = :daily ,isFavorite = :isFavorite WHERE isCurrent= true")
-//    suspend fun updateCurrent( lat: Double,
-//                               lon: Double,
-//                             timezone: String,
-//                              timezone_offset: Long,
-//                             current: Current,
-//                             hourly: List<Current>,
-//                              daily: List<Daily>,
-//                             isFavorite:Boolean?)
-
+    //current
+    @Query("DELETE FROM Welcome where isFavorite= false")
+    suspend fun deleteCurrent():Int
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertCurrentWeather(welcome: Welcome): Long
+    @Query("SELECT * FROM Welcome where isFavorite= false LIMIT 1")
+    fun getCurrentWeathers(): Flow<Welcome>?
+    @Transaction
+    suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)
+    { val existingWeather=getCurrentWeathers()
+        existingWeather?.let {
+            deleteCurrent()
+        }
+        insertCurrentWeather(welcome)
+    }
 }
 
-@Database(entities = arrayOf(Welcome::class,Alert::class), version = 13)
+@Database(entities = arrayOf(Welcome::class,Alert::class), version = 24)
 @TypeConverters(DataConverter::class)
 abstract class WeatherDataBse : RoomDatabase() {
     abstract fun getWeatherDao(): WeatherDao

@@ -2,9 +2,7 @@ package com.example.weatherforecast.ui.home
 
 import android.content.Context
 import androidx.lifecycle.*
-import com.example.weatherforecast.model.Pojos.ApiState
-import com.example.weatherforecast.model.Pojos.Constants
-import com.example.weatherforecast.model.Pojos.Settings
+import com.example.weatherforecast.model.Pojos.*
 
 import com.example.weatherforecast.model.Repository
 import kotlinx.coroutines.Dispatchers
@@ -17,11 +15,15 @@ class HomeViewModel(var context: Context) : ViewModel() {
     private var repository: Repository
     private var _welcomeCurrentWeather: MutableStateFlow<ApiState>
      var welcomeCurrentWeather: StateFlow<ApiState>
+    private var _welcomeCurrentWeatherLocal: MutableStateFlow<ApiState>
+    var welcomeCurrentWeatherLocal: StateFlow<ApiState>
 
     init {
         repository = Repository.getInstance(context)
         _welcomeCurrentWeather= MutableStateFlow(ApiState.Loading)
         welcomeCurrentWeather= _welcomeCurrentWeather
+        _welcomeCurrentWeatherLocal=MutableStateFlow(ApiState.Loading)
+        welcomeCurrentWeatherLocal=_welcomeCurrentWeatherLocal
     }
 
     fun getCurrentWeather(
@@ -39,7 +41,7 @@ class HomeViewModel(var context: Context) : ViewModel() {
                     lon = lon,
                     lang = lang,
                     units = units
-                ).catch { e->_welcomeCurrentWeather.value=ApiState.Fail(e) }.collect{
+                ).catch { e->_welcomeCurrentWeather.value=ApiState.Fail(e) }.collectLatest{
                     apiWeather->
                     _welcomeCurrentWeather.value=ApiState.Success(apiWeather)
 
@@ -52,6 +54,22 @@ class HomeViewModel(var context: Context) : ViewModel() {
     fun getSettings(): Settings? {
         return repository.getSettings()
     }
+
+    fun insertOrUpdateCurrent(welcome: Welcome)
+        {   viewModelScope.launch{
+            repository.insertOrUpdateCurrentWeather(welcome)
+        }
+        }
+    fun getCurrentWeatherLocal(){
+        viewModelScope.launch {
+        repository.getCurrentWeatherDB()?.catch {
+                e->_welcomeCurrentWeatherLocal.value=ApiState.Fail(e)
+        }?.collectLatest {
+            _welcomeCurrentWeatherLocal.value=ApiState.Success(it)
+        }
+    }
+    }
+
 
 }
 

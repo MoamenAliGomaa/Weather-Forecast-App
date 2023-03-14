@@ -1,10 +1,19 @@
 package com.example.weatherforecast.model
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
+import android.location.Address
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.ui.notifications.AlarmReciver
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random.Default.nextInt
@@ -88,19 +97,32 @@ object Utils {
             .replace(",", "")
             .replace(" ", "")
     }
-    fun getAddressEnglish(context: Context, lat: Double?, lon: Double?):String?{
-        Log.i(TAG, "getAddressEnglish: "+lat)
-        Log.i(TAG, "getAddressEnglish: $lon")
-        val geocoder= Geocoder(context)
-        val address =geocoder.getFromLocation(lat!!,lon!!,1)
-        return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
+    fun getAddressEnglish(context: Context, lat: Double?, lon: Double?):String{
+
+        var address:MutableList<Address>?=null
+
+            val geocoder= Geocoder(context)
+            address =geocoder.getFromLocation(lat!!,lon!!,1)
+        if (address?.isEmpty()==true)
+        {
+            return "Unkown location"
+        }
+        else
+            return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
     }
     fun getAddressArabic(context: Context,lat:Double,lon:Double):String{
-        Log.i(TAG, "getAddressara: "+lat)
-        Log.i(TAG, "getAddressara: $lon")
-        val geocoder= Geocoder(context,Locale("ar"))
-        val address =geocoder.getFromLocation(lat,lon,1)
-        return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
+        var address:MutableList<Address>?=null
+
+            val geocoder= Geocoder(context,Locale("ar"))
+            address =geocoder.getFromLocation(lat,lon,1)
+
+        if (address?.isEmpty()==true)
+        {
+            return "Unkown location"
+        }
+        else
+            return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
+
     }
     fun getCurrentDate(): String {
         val currentTime = Calendar.getInstance().time
@@ -131,4 +153,52 @@ object Utils {
     fun generateRandomNumber():Int{
         return nextInt()
     }
+    fun progressDialog(context: Context): ProgressDialog {
+      var progressDialog = ProgressDialog(context)
+        progressDialog.setTitle("Please Wait")
+        progressDialog.setMessage("Loading ...")
+        progressDialog.setCancelable(false) // blocks UI interaction
+        return progressDialog
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun canelAlarm(context: Context, alert:String?, requestCode:Int) {
+        var alarmMgr: AlarmManager? = null
+        lateinit var alarmIntent: PendingIntent
+
+        alarmMgr = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmIntent = Intent(context.applicationContext, AlarmReciver::class.java).putExtra(
+            Constants.Alert,alert).let { intent ->
+            PendingIntent.getBroadcast(context.applicationContext, requestCode, intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+        alarmMgr?.cancel(alarmIntent)
+
+    }
+    fun isDaily(startTime: Long,endTime:Long):Boolean{
+        return endTime-startTime >= 86400000
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun isOnline(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
 }

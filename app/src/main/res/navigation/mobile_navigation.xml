@@ -9,7 +9,17 @@
         android:id="@+id/navigation_home"
         android:name="com.example.weatherforecast.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="isComingFav"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="welcomFavObj"
+            app:argType="com.example.weatherforecast.model.Pojos.Welcome"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -67,6 +77,13 @@
         <action
             android:id="@+id/action_favoritesFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_favoritesFragment_to_navigation_home"
+            app:destination="@id/navigation_home" >
+            <argument
+                android:name="isComingFromFav"
+                android:defaultValue="false" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/alertDialogFragment2"

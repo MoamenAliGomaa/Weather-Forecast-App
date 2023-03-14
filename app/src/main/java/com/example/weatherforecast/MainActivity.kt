@@ -1,7 +1,11 @@
 package com.example.weatherforecast
 
+import android.content.IntentFilter
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -10,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weatherforecast.databinding.ActivityMainBinding
+import com.example.weatherforecast.model.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -49,6 +54,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+
+
+//        val config = resources.configuration
+//        val lang = "fa" // your language code
+//        val locale = Locale(lang)
+//        Locale.setDefault(locale)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+//            config.setLocale(locale)
+//        else
+//            config.locale = locale
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+//            createConfigurationContext(config)
+//        resources.updateConfiguration(config, resources.displayMetrics)
+
+
     }
 
 

@@ -19,7 +19,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.WorkManager
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -32,6 +34,7 @@ import com.example.weatherforecast.model.Utils
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.absoluteValue
 
 
 class AlarmReciver : BroadcastReceiver() {
@@ -45,13 +48,12 @@ class AlarmReciver : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceive(context: Context, intent: Intent) {
 
-
+        val repo=Repository.getInstance(context)
+        var alertSettings=repo.getAlertSettings()
         var alertJson = intent.getStringExtra(Constants.Alert)
         var alert = Gson().fromJson(alertJson, Alert::class.java)
-        var repository = Repository.getInstance(ctx = context)
         val notificationHelper = NotificationHelper(context)
         notificationId=1
-        Log.e("onReceive", "onReceive: generated id "+notificationId )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             notificationManager=  notificationHelper.alarmNotificationManager(context)
@@ -59,42 +61,61 @@ class AlarmReciver : BroadcastReceiver() {
 
 
 
+
             Log.e("onReceive", "ladskjflsakjdflskjdflskjdfslkjdflasdf")
             Toast.makeText(context, "OnReceive alarm test", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
+                if (!Utils.isDaily(alert.startTime,alert.endTime))
+                {
+                    Utils.canelAlarm(context,alert.toString(),alert.startTime.toInt())
+                    repo.deleteAlert(alert)
+                    WorkManager.getInstance(context.applicationContext).cancelAllWorkByTag(alert.startTime.toString())
+                }
                 try {
-                    repository.getCurrentWeather(lat = alert.lat.toString(), lon = alert.lon.toString())
+                    repo.getCurrentWeather(lat = alert.lat.toString(), lon = alert.lon.toString())
                         .collectLatest {
                             val bitmap = arrayOf<Bitmap?>(null)
 
-                            Glide.with(context)
-                                .asBitmap()
-                                .load(Utils.getIconUrl(it.current.weather[0].icon))
-                                .into(object : CustomTarget<Bitmap?>() {
-                                    @RequiresApi(Build.VERSION_CODES.S)
-                                    override fun onResourceReady(
-                                        resource: Bitmap,
-                                        @Nullable transition: Transition<in Bitmap?>?
-                                    ) {
-                                        bitmap[0] = resource
+                                Glide.with(context)
+                                    .asBitmap()
+                                    .load(Utils.getIconUrl(it.current.weather[0].icon))
+                                    .into(object : CustomTarget<Bitmap?>() {
+                                        @RequiresApi(Build.VERSION_CODES.S)
+                                        override fun onResourceReady(
+                                            resource: Bitmap,
+                                            @Nullable transition: Transition<in Bitmap?>?
+                                        ) {
+                                            bitmap[0] = resource
 
-                                        Log.e("onReceive", "onResourceReady: "+resource )
-                                        notification = Uri.parse(("android.resource://" + context.applicationContext.packageName) + "/" + R.raw.weather_alarm)
-                                        r = RingtoneManager.getRingtone(
-                                            context.applicationContext,
-                                            notification
-                                        )
-                                        r.play()
-                                        notificationManager.notify(notificationId!!, notificationHelper.getNotification(context,
-                                            notificationId!!, Utils.getAddressEnglish(context,alert.lat,alert.lon)!!, it.current.weather[0].description,bitmap[0]!!))
+                                            Log.e("onReceive", "onResourceReady: "+resource )
+                                            notification = Uri.parse(("android.resource://" + context.applicationContext.packageName) + "/" + R.raw.weather_alarm)
+                                            r = RingtoneManager.getRingtone(
+                                                context.applicationContext,
+                                                notification
+                                            )
+                                            if(alertSettings?.isALarm==true && !alertSettings.isNotification){
+                                                r.play()
+                                                notificationManager.notify(notificationId!!, notificationHelper.getNotification(context,
+                                                    notificationId!!, Utils.getAddressEnglish(context,alert.lat,alert.lon)!!, it.current.weather[0].description,bitmap[0]!!))
+
+                                            }
+                                            if(alertSettings?.isALarm==false && alertSettings.isNotification){
+                                             notificationManager.notify(notificationId!!,notificationHelper.getNotificationBuilder(
+                                                    Utils.getAddressEnglish(context,alert.lat,alert.lon)!!,  it.current.weather[0].description,context,
+                                                    bitmap[0]!!
+
+                                                ).build())
+                                            }
+
+                                        }
+
+                                        override fun onLoadCleared(@Nullable placeholder: Drawable?) {
+
+                                        }
+                                    })
 
 
-                                    }
 
-                                    override fun onLoadCleared(@Nullable placeholder: Drawable?) {
-
-                                    }
-                                })
 
                         }
 
@@ -113,43 +134,5 @@ class AlarmReciver : BroadcastReceiver() {
     }
 
 
-//fun ringToneManager(context: Context): MediaPlayer? {
-//    val alarmSound = Uri.parse(("android.resource://" + context.applicationContext.packageName) + "/" + R.raw.weather_alarm)
-
-//    return MediaPlayer.create(context.getApplicationContext(), alarmSound)
-//
-//}
-//    private fun startMP(context: Context) {
-//        if (mp == null) {
-//            mp = MediaPlayer.create(context, R.raw.weather_alarm)
-//            mp?.setOnCompletionListener(OnCompletionListener { stopMP(context) })
-//        }
-//        mp?.start()
-//        mp?.setLooping(true)
-//    }
-//
-//    private fun stopMP(context: Context) {
-//        if (mp != null) {
-//            mp?.stop()
-//            mp = null
-//            Toast.makeText(context, "song is stopped ", Toast.LENGTH_SHORT).show()
-//        }
-//    }
- fun ringtone(context: Context,isOn:Boolean) {
-
-    try {
-
-        if (isOn)
-        {
-            r.play()
-        }
-        else
-        {
-            r.stop()
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
 }
 

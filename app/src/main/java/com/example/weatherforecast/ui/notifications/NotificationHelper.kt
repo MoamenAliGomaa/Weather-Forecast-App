@@ -18,79 +18,46 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.weatherforecast.R
+import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.model.Utils
+import com.google.gson.Gson
+import kotlin.math.absoluteValue
 
 
 class NotificationHelper(context: Context?) : ContextWrapper(context) {
-    private var mNotificationManager: NotificationManager? = null
+
     private val MY_CHANNEL = "my_channel"
-    private val vibrationScheme = longArrayOf(200, 400)
 
-    /**
-     * Registers notification channels, which can be used later by individual notifications.
-     *
-     * @param context The application context
-     */
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            // Create the channel object with the unique ID MY_CHANNEL
-            val myChannel = NotificationChannel(
-                MY_CHANNEL,
-                resources.getString(R.string.notification_channel_title),
-                NotificationManager.IMPORTANCE_HIGH
-            )
-
-            // Configure the channel's initial settings
-            myChannel.lightColor = Color.GREEN
-            myChannel.vibrationPattern = vibrationScheme
-
-            // Submit the notification channel object to the notification manager
-            notificationManager!!.createNotificationChannel(myChannel)
-        }
-    }
-
-    /**
-     * Build you notification with desired configurations
-     *
-     */
     fun getNotificationBuilder(
         title: String?,
         body: String?,
-        context:Context
+        context:Context,bitmap:Bitmap
     ): NotificationCompat.Builder {
         val contentIntent = PendingIntent.getActivity(
             context, 0,
             Intent(context, AlarmReciver::class.java), FLAG_MUTABLE
         )
-        val notificationLargeIconBitmap = BitmapFactory.decodeResource(
-            applicationContext.resources,
-            R.mipmap.ic_launcher
-        )
+
         return NotificationCompat.Builder(applicationContext, MY_CHANNEL)
-            .setSmallIcon(R.drawable.humidity)
-            .setLargeIcon(notificationLargeIconBitmap)
+            .setSmallIcon(R.drawable.app_icon)
+            .setLargeIcon(bitmap)
             .setContentTitle(title)
             .setContentText(body)
             .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-            .setVibrate(vibrationScheme)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-            .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+            .setColor(ContextCompat.getColor(applicationContext, R.color.white))
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
     }
 
-    val notificationManager: NotificationManager?
-        get() {
-            if (mNotificationManager == null) {
-                mNotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            }
-            return mNotificationManager
-        }
+
     @RequiresApi(Build.VERSION_CODES.S)
     fun alarmNotificationManager(context: Context): NotificationManager {
         val channel = NotificationChannel(
@@ -110,6 +77,7 @@ class NotificationHelper(context: Context?) : ContextWrapper(context) {
         return notificationManager
     }
 fun getNotification(context: Context,notificationId: Int,title:String,description: String,bitmap:Bitmap):Notification{
+
     val fullScreenIntent =
         Intent(context.applicationContext, FullScreenActivity::class.java).apply {
             action=Constants.ACTION_SNOOZE
@@ -122,6 +90,7 @@ fun getNotification(context: Context,notificationId: Int,title:String,descriptio
     val snoozeIntent = Intent(this, ActionReceiver::class.java).apply {
         action = Constants.ACTION_SNOOZE
         putExtra(Constants.EXTRA_NOTIFICATION_ID, notificationId)
+
     }
     val snoozePendingIntent: PendingIntent =
         PendingIntent.getBroadcast(this, 0, snoozeIntent, FLAG_MUTABLE)
