@@ -71,6 +71,7 @@ class NotificationsAdapter(var alertList: List<Alert>?, var context: Context, va
 
 
 
+
     }
 
     override fun getItemCount(): Int = alertList?.size!!
