@@ -5,18 +5,18 @@ import com.example.weatherforecast.DataSource.FakeLocalDataSource
 import com.example.weatherforecast.DataSource.FakeRemoteDataSource
 import com.example.weatherforecast.DataSource.FakeTestRepositary
 import com.example.weatherforecast.MainCoroutineRule
-import com.example.weatherforecast.model.IRepository
+
 import com.example.weatherforecast.model.Network.IRemoteDataSource
 import com.example.weatherforecast.model.Pojos.*
 import com.example.weatherforecast.model.database.ILocalDataSource
-import com.example.weatherforecast.ui.home.HomeViewModel
+
 import com.example.weatherforecast.ui.notifications.NotificationsViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
+
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
-import org.hamcrest.core.IsNull
+
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

@@ -2,15 +2,12 @@ package com.example.weatherforecast.ui.notifications
 
 
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
@@ -19,14 +16,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
 import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Alert
@@ -35,11 +28,9 @@ import com.example.weatherforecast.model.Repository
 import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
 import com.example.weatherforecast.model.database.LocalDataSource
-import com.example.weatherforecast.model.database.WeatherDataBse
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.math.absoluteValue
 
 
 class AlarmReciver : BroadcastReceiver() {
@@ -93,7 +84,14 @@ class AlarmReciver : BroadcastReceiver() {
                                             bitmap[0] = resource
 
                                             Log.e("onReceive", "onResourceReady: "+resource )
-                                            notification = Uri.parse(("android.resource://" + context.applicationContext.packageName) + "/" + R.raw.weather_alarm)
+
+
+
+                                            notification = RingtoneManager.getActualDefaultRingtoneUri(
+                                                context.applicationContext,
+                                                RingtoneManager.TYPE_ALARM
+                                            )
+                                                //Uri.parse(("android.resource://" + context.applicationContext.packageName) + "/" + R.raw.weather_alarm)
                                             r = RingtoneManager.getRingtone(
                                                 context.applicationContext,
                                                 notification
