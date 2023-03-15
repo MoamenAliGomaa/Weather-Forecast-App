@@ -28,4 +28,4 @@ visibility distance, relative humidity, Wind Speed
 * Location Permission.
 
 ## ScreenShots
-![photo_2022-03-22_11-31-43](https://github.com/MoamenAliGomaa/Weather-Forecast-App/tree/master/screen_shots/)
+![photo_2022-03-22_11-31-43](https://github.com/MoamenAliGomaa/Weather-Forecast-App/blob/master/screen_shots/photo_2023-03-15_17-33-13%20(4).jpg)
