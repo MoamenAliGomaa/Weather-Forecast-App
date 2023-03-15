@@ -37,9 +37,7 @@ class FavoritesAdatpter(var welcomeList: List<Welcome>?, var context: Context, v
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.i(TAG, "onBindViewHolder: "+welcomeList?.size)
         var current= welcomeList?.get(position)
-        holder.binding.tvCityNameFav.text=Utils.getAddressEnglish(context, current?.lat,
-            current?.lon
-        )
+        holder.binding.tvCityNameFav.text=current?.countryName
         holder.binding.btnDeleteFav.setOnClickListener {
             AlertDialog.Builder(context)
                 .setTitle("Delete Location")

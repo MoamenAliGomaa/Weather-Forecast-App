@@ -25,6 +25,7 @@ class FavoritesViewModel(var repository: IRepository) : ViewModel() {
     fun getFavoriteWeathers(){
         viewModelScope.launch {
             repository.getFavoriteWeathers().catch {e->_welcomeFavoriteWeather.value=LocalDataState.Fail(e)  }.collectLatest {
+
                 _welcomeFavoriteWeather.value=LocalDataState.Success(it)
                 Log.i(TAG, "getFavoriteWeathers: "+it)
             }

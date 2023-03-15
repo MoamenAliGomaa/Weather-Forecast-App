@@ -71,14 +71,14 @@ class FavoritesFragment : Fragment() {
                 when(it)
                 {
                     is LocalDataState.Loading->{
-                          progressDialog.show()
+//                          progressDialog.show()
                     }
                     is LocalDataState.Fail->{
-                       progressDialog.hide()
+//                       progressDialog.hide()
                         Toast.makeText(requireContext(),"Failed", Toast.LENGTH_SHORT).show()
                     }
                     is LocalDataState.Success->{
-                        progressDialog.hide()
+//                        progressDialog.hide()
                         if(it.data?.isEmpty()==true)
                         {
                             binding.rvFavorites.visibility=View.GONE
@@ -86,6 +86,7 @@ class FavoritesFragment : Fragment() {
                         }
                         else
                         {
+//                            progressDialog.dismiss()
                             binding.rvFavorites.visibility=View.VISIBLE
                             binding.noFavHolerAnimation.visibility=View.GONE
 
@@ -95,6 +96,7 @@ class FavoritesFragment : Fragment() {
                                 },{
                                     Navigation.findNavController(requireView()).navigate(
                                         FavoritesFragmentDirections.actionFavoritesFragmentToNavigationHome().apply {
+
                                           isComingFav=true
                                             welcomFavObj=it
                                         })
@@ -112,5 +114,6 @@ class FavoritesFragment : Fragment() {
 
         return root
     }
+
 
 }

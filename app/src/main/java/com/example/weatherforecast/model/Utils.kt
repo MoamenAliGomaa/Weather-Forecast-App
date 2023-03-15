@@ -1,10 +1,14 @@
 package com.example.weatherforecast.model
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
@@ -17,6 +21,7 @@ import com.example.weatherforecast.ui.notifications.AlarmReciver
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random.Default.nextInt
+
 
 private const val TAG = "Utils"
 object Utils {
@@ -107,7 +112,15 @@ object Utils {
         {
             return "Unkown location"
         }
-        else
+        else if (address?.get(0)?.countryName.isNullOrEmpty())
+        {
+            return "Unkown Country"
+        }
+        else if (address?.get(0)?.adminArea.isNullOrEmpty())
+        {
+            return address?.get(0)?.countryName.toString()
+
+        }        else
             return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
     }
     fun getAddressArabic(context: Context,lat:Double,lon:Double):String{
@@ -119,6 +132,15 @@ object Utils {
         if (address?.isEmpty()==true)
         {
             return "Unkown location"
+        }
+        else if (address?.get(0)?.countryName.isNullOrEmpty())
+        {
+            return "Unkown Country"
+        }
+        else if (address?.get(0)?.adminArea.isNullOrEmpty())
+        {
+            return address?.get(0)?.countryName.toString()
+
         }
         else
             return address?.get(0)?.countryName.toString()+" , "+address?.get(0)?.adminArea
@@ -199,6 +221,80 @@ object Utils {
             }
         }
         return false
+    }
+    fun setLanguageEnglish(activity: Activity) {
+        val languageToLoad = "en" // your language
+
+        val locale = Locale(languageToLoad)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        activity.baseContext.getResources().updateConfiguration(
+            config,
+            activity.baseContext.getResources().getDisplayMetrics()
+        )
+    }
+    fun setLanguageArabic(activity: Activity) {
+        val languageToLoad = "ar" // your language
+
+        val locale = Locale(languageToLoad)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+       activity.baseContext.getResources().updateConfiguration(
+            config,
+           activity.baseContext.getResources().getDisplayMetrics()
+        )
+
+    }
+     fun updateResources(context: Context, language: String): Boolean {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val resources: Resources = context.getResources()
+        val configuration = resources.configuration
+        configuration.locale = locale
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+
+        return true
+    }
+     fun setAppLocale(localeCode: String,context: Context) {
+        val resources = context.resources
+        val dm = resources.displayMetrics
+        val config: Configuration = resources.configuration
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            config.setLocale(Locale(localeCode.lowercase(Locale.getDefault())))
+        } else {
+            config.locale = Locale(localeCode.lowercase(Locale.getDefault()))
+        }
+        resources.updateConfiguration(config, dm)
+    }
+
+    fun changeLang(context: Context, lang_code: String): ContextWrapper? {
+        var context: Context = context
+        val sysLocale: Locale
+        val rs: Resources = context.getResources()
+        val config: Configuration = rs.getConfiguration()
+        sysLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            config.getLocales().get(0)
+        } else {
+            config.locale
+        }
+        if (lang_code != "" && !sysLocale.getLanguage().equals(lang_code)) {
+            val locale = Locale(lang_code)
+            Locale.setDefault(locale)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocale(locale)
+            } else {
+                config.locale = locale
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                context = context.createConfigurationContext(config)
+            } else {
+                context.getResources()
+                    .updateConfiguration(config, context.getResources().getDisplayMetrics())
+            }
+        }
+        return ContextWrapper(context)
     }
 
 }

@@ -43,6 +43,10 @@ class FakeLocalDataSource(private var alertList: MutableList<Alert> = mutableLis
         welcomeList.add(current)
     }
 
+    override suspend fun updateFavWeather(welcome: Welcome) {
+        TODO("Not yet implemented")
+    }
+
     override fun getAlerts(): Flow<List<Alert>> {
         return flowOf(alertList)
     }

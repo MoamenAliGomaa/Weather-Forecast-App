@@ -1,12 +1,10 @@
 package com.example.weatherforecast
 
-import android.content.IntentFilter
-import android.graphics.Color
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -14,12 +12,22 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weatherforecast.databinding.ActivityMainBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
+import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.ui.home.HomeViewModel
+import com.example.weatherforecast.ui.home.HomeViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.*
 
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    lateinit var homeViewModel: HomeViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()?.hide()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         val navView: BottomNavigationView = binding.navView
 
@@ -56,7 +63,31 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+
+
+
     }
+    override fun attachBaseContext(newBase: Context?) {
+
+        SharedManger.init(newBase!!)
+        if(SharedManger.getSettings()?.lang.equals(Constants.LANG_AR))
+        {
+            val lang_code = "ar" //load it from SharedPref
+            val context: Context = Utils.changeLang(newBase!!, lang_code)!!
+
+        }
+        else
+        {
+            val lang_code = "en" //load it from SharedPref
+            val context: Context = Utils.changeLang(newBase!!, lang_code)!!
+
+        }
+
+        super.attachBaseContext(newBase)
+    }
+
+
+
 
 
 

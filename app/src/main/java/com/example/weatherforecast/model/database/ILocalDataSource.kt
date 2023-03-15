@@ -14,6 +14,7 @@ interface ILocalDataSource {
 
     fun getCurrentWeathers(): Flow<Welcome>?
     suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)
+    suspend fun updateFavWeather(welcome: Welcome)
 
     fun getAlerts(): Flow<List<Alert>>
     fun getAlert(id: Long): Flow<Alert>

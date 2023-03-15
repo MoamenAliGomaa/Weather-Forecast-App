@@ -26,4 +26,15 @@
     <string name="title_favorites">Faorites</string>
     <string name="delete">Delete</string>
     <string name="notification_channel_title">Weather Forecast </string>
+    <string name="language">Language</string>
+    <string name="arabic">Arabic</string>
+    <string name="english">English</string>
+    <string name="location">Location</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map</string>
+    <string name="unit">Unit</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="celsius">Celsius</string>
+    <string name="save">Save</string>
 </resources>

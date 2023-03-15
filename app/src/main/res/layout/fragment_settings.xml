@@ -64,7 +64,7 @@
                         android:layout_gravity="center"
                         android:background="@color/row_color_bule_light"
                         android:gravity="center"
-                        android:text="Language"
+                        android:text="@string/language"
                         android:textColor="@color/main_color_2"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -81,7 +81,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="Arabic"
+                            android:text="@string/arabic"
                             android:textColor="@color/string_sec_color"
                             android:textSize="16sp"
                             android:textStyle="normal" />
@@ -91,7 +91,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="English"
+                            android:text="@string/english"
                             android:textColor="@color/string_sec_color"
                             android:textSize="16sp"
                             android:textStyle="normal" />
@@ -126,7 +126,7 @@
                         android:layout_gravity="center"
                         android:background="@color/row_color_bule_light"
                         android:gravity="center"
-                        android:text="Location"
+                        android:text="@string/location"
                         android:textColor="@color/main_color_2"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -144,7 +144,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="GPS"
+                            android:text="@string/gps"
                             android:textColor="@color/string_sec_color"
                             android:textSize="16sp"
                             android:textStyle="normal" />
@@ -155,7 +155,7 @@
                             android:layout_height="match_parent"
 
                             android:layout_weight="1"
-                            android:text="Map"
+                            android:text="@string/map"
                             android:textColor="@color/string_sec_color"
                             android:textSize="16sp"
                             android:textStyle="normal" />
@@ -190,7 +190,7 @@
                     android:layout_gravity="center"
                     android:background="@color/row_color_bule_light"
                     android:gravity="center"
-                    android:text="Unit"
+                    android:text="@string/unit"
                     android:textColor="@color/main_color_2"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -207,21 +207,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Fahrenheit" />
+                        android:text="@string/fahrenheit" />
 
                     <RadioButton
                         android:id="@+id/radioButtonKelvin"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Kelvin" />
+                        android:text="@string/kelvin" />
 
                     <RadioButton
                         android:id="@+id/radioButtonCelicus"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Celsius" />
+                        android:text="@string/celsius" />
                 </RadioGroup>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -239,7 +239,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="@color/row_color_bule_light"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/main_color_2"
                 android:textStyle="bold" />
         </LinearLayout>

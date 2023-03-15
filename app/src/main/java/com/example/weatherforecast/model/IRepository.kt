@@ -23,6 +23,7 @@ interface IRepository {
     suspend fun deleteFavorite(welcome: Welcome)
     suspend fun getCurrentWeatherDB(): Flow<Welcome>?
     suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)
+    suspend fun updateFavWeather(welcome: Welcome)
 
     //alert room
     suspend fun insertAlert(alert: Alert): Long

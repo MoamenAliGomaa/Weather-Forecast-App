@@ -1,5 +1,6 @@
 package com.example.weatherforecast.ui.map
 
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -63,7 +64,7 @@ private var settings: Settings?=null
         SharedManger.init(requireContext())
         var repository= Repository.getInstance(LocalDataSource(requireContext()),RemoteDataSource())
         mapsViewModel= ViewModelProvider(this,
-            MapsViewModelFactory(repository)
+            MapsViewModelFactory(repository, requireContext())
         ).get(MapsViewModel::class.java)
         settings=mapsViewModel.getSettings()
         return v
@@ -140,11 +141,14 @@ private var settings: Settings?=null
         )
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
+
                 place.latLng?.let {
+
                   marker?.position=it
                     marker?.title=place.name
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 10f))
                 }
+
             }
 
             override fun onError(status: Status) {
@@ -154,6 +158,7 @@ private var settings: Settings?=null
         })
 
         }
+
 
     }
 

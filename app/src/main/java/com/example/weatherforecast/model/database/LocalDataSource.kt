@@ -42,6 +42,10 @@ class LocalDataSource(var context: Context) : ILocalDataSource {
   {
     return room.getWeatherDao().insertOrUpdateCurrentWeather(welcome)
   }
+  override suspend fun updateFavWeather(welcome: Welcome)
+  {
+    return room.getWeatherDao().updateFavWeather(welcome)
+  }
 
   override fun getAlerts(): Flow<List<Alert>>{
     return room.alertDao().getAlerts()

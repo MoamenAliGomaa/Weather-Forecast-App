@@ -23,7 +23,6 @@ class ActionReceiver : BroadcastReceiver() {
         var notificationHelper=NotificationHelper(context)
                 if (intent.action.equals(Constants.ACTION_SNOOZE)) {
                         r.stop()
-                    Log.e("onReceive", "onReceive: "+intent.getStringExtra(Constants.EXTRA_NOTIFICATION_ID) )
                         notificationHelper.alarmNotificationManager(context).cancel(1)
         }
     }

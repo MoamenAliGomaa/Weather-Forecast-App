@@ -1,5 +1,6 @@
 package com.example.weatherforecast.ui.map
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -8,19 +9,15 @@ import com.example.weatherforecast.model.IRepository
 import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.Settings
 import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.Utils
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 
 
 private const val TAG = "HomeViewModel"
 
-class MapsViewModel(var repository: IRepository) : ViewModel() {
-   // private var repository: Repository
+class MapsViewModel(var repository: IRepository,var context: Context) : ViewModel(){
 
-
-    init {
-       // repository = Repository.getInstance(context)
-    }
     fun getSettings():Settings?{
         return repository.getSettings()
     }
@@ -33,6 +30,7 @@ class MapsViewModel(var repository: IRepository) : ViewModel() {
         repository.getCurrentWeather(lat=lat.toString(),lon=lon.toString()).catch {e->
         }.collect{
             Log.e(TAG, "insertFavorite:  "+ it )
+            it.countryName=Utils.getAddressEnglish(context,it.lat,it.lon)
             it.isFavorite=true
             repository.insertWeather(it)
         }
@@ -46,10 +44,10 @@ class MapsViewModel(var repository: IRepository) : ViewModel() {
 }
 
 
-class MapsViewModelFactory(val repository: Repository) : ViewModelProvider.Factory {
+class MapsViewModelFactory(val repository: Repository,val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(MapsViewModel::class.java)) {
-            MapsViewModel(repository) as T
+            MapsViewModel(repository,context) as T
         } else {
             throw java.lang.IllegalArgumentException("View modle class not found")
         }

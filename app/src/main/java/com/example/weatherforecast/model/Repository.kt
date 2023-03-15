@@ -75,10 +75,12 @@ class Repository private constructor(var room:ILocalDataSource,var retrofit: IRe
     }
     override suspend fun getCurrentWeatherDB()=room.getCurrentWeathers()
     override suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)= room.insertOrUpdateCurrentWeather(welcome)
+    override suspend fun updateFavWeather(welcome: Welcome)=room.updateFavWeather(welcome)
     //alert room
     override suspend fun insertAlert(alert: Alert)=room.insertAlert(alert)
     override suspend fun deleteAlert(alert: Alert)=room.deleteAlert(alert)
     override fun getAlerts()=room.getAlerts()
     override fun getAlert(id: Long)=room.getAlert(id!!)
+
 
 }

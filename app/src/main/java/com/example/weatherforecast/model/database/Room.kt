@@ -46,9 +46,12 @@ interface WeatherDao {
         }
         insertCurrentWeather(welcome)
     }
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+   suspend fun updateFavWeather(welcome: Welcome)
+
 }
 
-@Database(entities = arrayOf(Welcome::class,Alert::class), version = 24)
+@Database(entities = arrayOf(Welcome::class,Alert::class), version = 26)
 @TypeConverters(DataConverter::class)
 abstract class WeatherDataBse : RoomDatabase() {
     abstract fun getWeatherDao(): WeatherDao

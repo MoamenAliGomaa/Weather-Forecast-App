@@ -43,34 +43,38 @@ class FakeTestRepositary(private var localDataSource: ILocalDataSource,private v
     }
 
     override suspend fun insertWeather(welcome: Welcome): Long {
-        TODO("Not yet implemented")
+   return localDataSource.insertWeather(welcome)
     }
 
     override suspend fun deleteFavorite(welcome: Welcome) {
-        TODO("Not yet implemented")
+        localDataSource.deleteFavorite(welcome)
     }
 
     override suspend fun getCurrentWeatherDB(): Flow<Welcome>? {
-        TODO("Not yet implemented")
+       return localDataSource.getCurrentWeathers()
     }
 
     override suspend fun insertOrUpdateCurrentWeather(welcome: Welcome) {
-        TODO("Not yet implemented")
+      localDataSource.insertOrUpdateCurrentWeather(welcome)
+    }
+
+    override suspend fun updateFavWeather(welcome: Welcome) {
+        localDataSource.updateFavWeather(welcome)
     }
 
     override suspend fun insertAlert(alert: Alert): Long {
-        TODO("Not yet implemented")
+      return localDataSource.insertAlert(alert)
     }
 
     override suspend fun deleteAlert(alert: Alert) {
-        TODO("Not yet implemented")
+       localDataSource.deleteAlert(alert)
     }
 
     override fun getAlerts(): Flow<List<Alert>> {
-        TODO("Not yet implemented")
+     return  localDataSource.getAlerts()
     }
 
     override fun getAlert(id: Long): Flow<Alert> {
-        TODO("Not yet implemented")
+      return localDataSource.getAlert(id)
     }
 }

@@ -5,11 +5,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.RelativeLayout
@@ -26,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
 import com.example.weatherforecast.databinding.FragmentHomeBinding
 import com.example.weatherforecast.model.Network.RemoteDataSource
@@ -36,7 +38,6 @@ import com.example.weatherforecast.model.Repository
 import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
 import com.example.weatherforecast.model.database.LocalDataSource
-import com.example.weatherforecast.model.database.WeatherDataBse
 import com.example.weatherforecast.ui.LoadingFragment.LoadingDialog
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationBarView
@@ -72,49 +73,125 @@ class HomeFragment : Fragment() {
         homeViewModel= ViewModelProvider(this,HomeViewModelFactory(repository)).get(HomeViewModel::class.java)
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+
         val arg: HomeFragmentArgs by navArgs()
         if(arg.isComingFav)
         {
             navBar=requireActivity().findViewById(R.id.nav_view)
             navBar.visibility=View.GONE
             var favObj=arg.welcomFavObj
-            binding?.toolbarLayout?.tvCityName?.text=Utils.getAddressEnglish(requireContext(),favObj?.lat,favObj?.lon)
-            binding?.tvTempeatur?.text = favObj?.current?.temp.toString() + Constants.KELVIN
-            binding?.tvFeelsLike?.text = "Real feel : " + favObj?.current?.feels_like.toString() + Constants.KELVIN
-            binding?.iconTemp?.let {
-                Glide.with(requireContext()).load(Utils.getIconUrl(favObj?.current?.weather?.get(0)?.icon.toString()))
-                    .apply(
-                        RequestOptions().override(400, 300)
-                            .placeholder(R.drawable.ic_launcher_background)
-                            .error(R.drawable.ic_launcher_foreground)
-                    ).into(it)
+            if(Utils.isOnline(requireContext()))
+            {
+                homeViewModel.getFavWeather(favObj!!,requireContext())
+                lifecycleScope.launch {
+                    homeViewModel.welcomeFavWeatherOnline.collectLatest {
+                        result->
+                        when(result){
+                            is ApiState.Loading -> {
+                                progressDialog.show(childFragmentManager, LoadingDialog.TAG)
+                            }
+                            is ApiState.Success -> {
+                                progressDialog.dismiss()
+                                Toast.makeText(requireContext(),"you weather is up to dated",Toast.LENGTH_SHORT).show()
+
+                                binding?.toolbarLayout?.tvCityName?.text=Utils.getAddressEnglish(requireContext(),result.data.lat,result.data.lon)
+                                binding?.tvTempeatur?.text = result.data?.current?.temp.toString() + Constants.KELVIN
+                                binding?.tvFeelsLike?.text = "Real feel : " + result.data?.current?.feels_like.toString() + Constants.KELVIN
+                                binding?.iconTemp?.let {
+                                    Glide.with(requireContext()).load(Utils.getIconUrl(result.data?.current?.weather?.get(0)?.icon.toString()))
+                                        .apply(
+                                            RequestOptions().override(400, 300)
+                                                .placeholder(R.drawable.ic_launcher_background)
+                                                .error(R.drawable.ic_launcher_foreground)
+                                        ).into(it)
+                                }
+                                binding?.tvHumidity?.text = "Humidity : " + result.data.current?.humidity.toString() + "%"
+                                binding?.tvWeather?.text = result.data.current?.weather?.get(0)?.description.toString()
+                                binding?.tvDay?.text = Utils.formatday(result.data.current?.dt!!)
+                                binding?.tvWindspeed?.text =
+                                    "Wind Speed : " + result.data.current.wind_speed.toString() + Constants.WINDSPEED
+                                binding?.tvPressure?.text =
+                                    "Pressure : " +result.data.current.pressure.toString() + Constants.MBAR
+                                binding?.tvSunRise?.text = "Sun rise : " + Utils.formatTime(result.data.current.sunrise!!)
+                                binding?.tvSunSet?.text = "Sun set : " + Utils.formatTime(result.data.current.sunset!!)
+                                binding?.tvDate?.text = Utils.formatDate(result.data.current.dt)
+                                binding?.rvWeatherHourly?.adapter =
+                                    HourlyAdapter(result.data.hourly, requireContext(), homeViewModel.getSettings())
+                                binding?.rvWeatherHourly?.apply {
+                                    adapter = binding?.rvWeatherHourly?.adapter
+                                    layoutManager = LinearLayoutManager(requireContext())
+                                        .apply { orientation = RecyclerView.HORIZONTAL }
+                                }
+                                var listDaily =result.data.daily as MutableList
+                                listDaily.removeAt(0)
+                                binding?.rvWeatherDaily?.adapter =
+                                    DailyAdapter(listDaily, requireContext(), homeViewModel.getSettings())
+                                binding?.rvWeatherDaily?.apply {
+                                    adapter = binding?.rvWeatherDaily?.adapter
+                                    layoutManager = LinearLayoutManager(requireContext())
+                                        .apply { orientation = RecyclerView.VERTICAL }
+                                }
+
+
+                            }
+                            is ApiState.Fail->{
+                                progressDialog.dismiss()
+
+                            }
+                        }
+                    }
+
+
+
+                }
+
+
             }
-            binding?.tvHumidity?.text = "Humidity : " + favObj?.current?.humidity.toString() + "%"
-            binding?.tvWeather?.text = favObj?.current?.weather?.get(0)?.description.toString()
-            binding?.tvDay?.text = Utils.formatday(favObj?.current?.dt!!)
-            binding?.tvWindspeed?.text =
-                "Wind Speed : " + favObj.current.wind_speed.toString() + Constants.WINDSPEED
-            binding?.tvPressure?.text =
-                "Pressure : " + favObj.current.pressure.toString() + Constants.MBAR
-            binding?.tvSunRise?.text = "Sun rise : " + Utils.formatTime(favObj.current.sunrise!!)
-            binding?.tvSunSet?.text = "Sun set : " + Utils.formatTime(favObj.current.sunset!!)
-            binding?.tvDate?.text = Utils.formatDate(favObj.current.dt)
-            binding?.rvWeatherHourly?.adapter =
-                HourlyAdapter(favObj.hourly, requireContext(), homeViewModel.getSettings())
-            binding?.rvWeatherHourly?.apply {
-                adapter = binding?.rvWeatherHourly?.adapter
-                layoutManager = LinearLayoutManager(requireContext())
-                    .apply { orientation = RecyclerView.HORIZONTAL }
+            else{
+                Toast.makeText(requireContext(),"you are offline please open your netwrok to update your weather",Toast.LENGTH_SHORT).show()
+                binding?.toolbarLayout?.tvCityName?.text=favObj?.countryName
+                binding?.tvTempeatur?.text = favObj?.current?.temp.toString() + Constants.KELVIN
+                binding?.tvFeelsLike?.text = "Real feel : " + favObj?.current?.feels_like.toString() + Constants.KELVIN
+                binding?.iconTemp?.let {
+                    Glide.with(requireContext()).load(Utils.getIconUrl(favObj?.current?.weather?.get(0)?.icon.toString()))
+                        .apply(
+                            RequestOptions().override(400, 300)
+                                .placeholder(R.drawable.ic_launcher_background)
+                                .error(R.drawable.ic_launcher_foreground)
+                        ).into(it)
+                }
+                binding?.tvHumidity?.text = "Humidity : " + favObj?.current?.humidity.toString() + "%"
+                binding?.tvWeather?.text = favObj?.current?.weather?.get(0)?.description.toString()
+                binding?.tvDay?.text = Utils.formatday(favObj?.current?.dt!!)
+                binding?.tvWindspeed?.text =
+                    "Wind Speed : " + favObj.current.wind_speed.toString() + Constants.WINDSPEED
+                binding?.tvPressure?.text =
+                    "Pressure : " + favObj.current.pressure.toString() + Constants.MBAR
+                binding?.tvSunRise?.text = "Sun rise : " + Utils.formatTime(favObj.current.sunrise!!)
+                binding?.tvSunSet?.text = "Sun set : " + Utils.formatTime(favObj.current.sunset!!)
+                binding?.tvDate?.text = Utils.formatDate(favObj.current.dt)
+                binding?.rvWeatherHourly?.adapter =
+                    HourlyAdapter(favObj.hourly, requireContext(), homeViewModel.getSettings())
+                binding?.rvWeatherHourly?.apply {
+                    adapter = binding?.rvWeatherHourly?.adapter
+                    layoutManager = LinearLayoutManager(requireContext())
+                        .apply { orientation = RecyclerView.HORIZONTAL }
+                }
+                var listDaily =favObj.daily as MutableList
+                listDaily.removeAt(0)
+                binding?.rvWeatherDaily?.adapter =
+                    DailyAdapter(listDaily, requireContext(), homeViewModel.getSettings())
+                binding?.rvWeatherDaily?.apply {
+                    adapter = binding?.rvWeatherDaily?.adapter
+                    layoutManager = LinearLayoutManager(requireContext())
+                        .apply { orientation = RecyclerView.VERTICAL }
+                }
+
+
+
             }
-            var listDaily =favObj.daily as MutableList
-            listDaily.removeAt(0)
-            binding?.rvWeatherDaily?.adapter =
-                DailyAdapter(listDaily, requireContext(), homeViewModel.getSettings())
-            binding?.rvWeatherDaily?.apply {
-                adapter = binding?.rvWeatherDaily?.adapter
-                layoutManager = LinearLayoutManager(requireContext())
-                    .apply { orientation = RecyclerView.VERTICAL }
-            }
+
+
 
 
         }
@@ -153,9 +230,11 @@ class HomeFragment : Fragment() {
                                 }
 
                                 if (homeViewModel.getSettings()?.lang == Constants.LANG_EN) {
+
                                     binding?.tvNextDays?.text = "Next Days"
                                     binding?.tvNextHour?.text = "Next Hours"
-                                    binding?.toolbarLayout?.tvCityName?.text=Utils.getAddressEnglish(requireContext(),result?.data?.lat,result?.data?.lon)
+                                    result.data.countryName=Utils.getAddressEnglish(requireContext(),result?.data?.lat,result?.data?.lon)
+                                    binding?.toolbarLayout?.tvCityName?.text=result.data.countryName
 
                                     if (homeViewModel.getSettings()?.unit == Constants.UNITS_DEFAULT) {
                                         binding?.tvTempeatur?.text = result.data.current.temp.toString() + Constants.KELVIN
@@ -184,9 +263,11 @@ class HomeFragment : Fragment() {
                                     binding?.tvDate?.text = Utils.formatDate(result.data.current.dt)
                                 }
                                 if (homeViewModel.getSettings()?.lang == Constants.LANG_AR) {
+
                                     binding?.tvNextDays?.text = "الايام القادمة"
                                     binding?.tvNextHour?.text = "الساعات القادمة"
-                                    binding?.toolbarLayout?.tvCityName?.text=Utils.getAddressArabic(requireContext(),result?.data?.lat!!,result?.data?.lon!!)
+                                    result.data.countryName=Utils.getAddressArabic(requireContext(),result?.data?.lat!!,result?.data?.lon!!)
+                                    binding?.toolbarLayout?.tvCityName?.text= result.data.countryName
 
                                     if (homeViewModel.getSettings()?.unit == Constants.UNITS_DEFAULT) {
                                         binding?.tvTempeatur?.text =
@@ -273,7 +354,7 @@ class HomeFragment : Fragment() {
                             }
                             is ApiState.Success ->{
                                 progressDialog.dismiss()
-                                binding?.toolbarLayout?.tvCityName?.text=Utils.getAddressEnglish(requireContext(),result?.data?.lat,result?.data?.lon)
+                                binding?.toolbarLayout?.tvCityName?.text=result.data.countryName
                                 binding?.tvTempeatur?.text = result?.data?.current?.temp.toString() + Constants.KELVIN
                                 binding?.tvFeelsLike?.text = "Real feel : " + result?.data?.current?.feels_like.toString() + Constants.KELVIN
                                 binding?.iconTemp?.let {

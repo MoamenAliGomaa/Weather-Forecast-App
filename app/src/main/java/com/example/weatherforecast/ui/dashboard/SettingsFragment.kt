@@ -1,5 +1,6 @@
 package com.example.weatherforecast.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,17 +9,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import com.example.kotlinproducts.view.API
-import com.example.weatherforecast.R
+import com.example.weatherforecast.MainActivity
 import com.example.weatherforecast.databinding.FragmentSettingsBinding
 import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Constants
-import com.example.weatherforecast.model.Pojos.LocalDataState
 import com.example.weatherforecast.model.Pojos.Settings
 import com.example.weatherforecast.model.Repository
 import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.database.LocalDataSource
-import com.example.weatherforecast.model.database.WeatherDataBse
 
 
 private const val TAG = "SettingsFragment"
@@ -57,7 +55,11 @@ class SettingsFragment : Fragment() {
             savButtonCheck()
             Log.i(TAG, "onCreateView: " + settings)
             settingsViewModel.saveSettings(settings)
-            Navigation.findNavController(it).navigate(R.id.navigation_home)
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+          //  Navigation.findNavController(it).navigate(R.id.navigation_home)
+
         }
 
 
@@ -101,9 +103,11 @@ class SettingsFragment : Fragment() {
             settings?.isMap = true
         }
         if (binding.radioButtonArabic.isChecked) {
+
             settings?.lang = Constants.LANG_AR
         }
         if (binding.radioButtonEnglish.isChecked) {
+
             settings?.lang = Constants.LANG_EN
         }
         if (binding.radioButtonKelvin.isChecked) {

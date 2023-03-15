@@ -6,6 +6,7 @@ import com.example.weatherforecast.model.IRepository
 import com.example.weatherforecast.model.Pojos.*
 
 import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,6 +19,8 @@ class HomeViewModel(var repository: IRepository) : ViewModel() {
      var welcomeCurrentWeather: StateFlow<ApiState>
     private var _welcomeCurrentWeatherLocal: MutableStateFlow<ApiState>
     var welcomeCurrentWeatherLocal: StateFlow<ApiState>
+    private var _welcomeFavWeatherOnline: MutableStateFlow<ApiState>
+    var welcomeFavWeatherOnline: StateFlow<ApiState>
 
     init {
 //        repository = Repository.getInstance(context)
@@ -25,6 +28,8 @@ class HomeViewModel(var repository: IRepository) : ViewModel() {
         welcomeCurrentWeather= _welcomeCurrentWeather
         _welcomeCurrentWeatherLocal=MutableStateFlow(ApiState.Loading)
         welcomeCurrentWeatherLocal=_welcomeCurrentWeatherLocal
+        _welcomeFavWeatherOnline=MutableStateFlow(ApiState.Loading)
+        welcomeFavWeatherOnline=_welcomeFavWeatherOnline
     }
 
     fun getCurrentWeather(
@@ -48,6 +53,20 @@ class HomeViewModel(var repository: IRepository) : ViewModel() {
 
                 }
 
+        }
+    }
+    fun getFavWeather(welcome: Welcome,context: Context){
+        viewModelScope.launch {
+            repository.getCurrentWeather(welcome.lat.toString(),welcome.lon.toString()).catch {
+
+                    e->_welcomeFavWeatherOnline.value=ApiState.Fail(e) }.collectLatest{
+                    apiWeather->
+                _welcomeFavWeatherOnline.value=ApiState.Success(apiWeather)
+                apiWeather.countryName=Utils.getAddressEnglish(context,apiWeather.lat,apiWeather.lon)
+                apiWeather.isFavorite=true
+                repository.updateFavWeather(apiWeather)
+
+            }
         }
     }
 

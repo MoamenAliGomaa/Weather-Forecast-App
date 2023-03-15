@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.text.format.Time
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.weatherforecast.model.Utils
 import java.io.Serializable
 import java.util.Date
 
@@ -18,7 +19,8 @@ import java.util.Date
     val daily: List<Daily>?,
     var isFavorite:Boolean?,
     val minutely: List<Minutely>?=null,
-    val alerts: List<Alert>?=null
+    val alerts: List<Alert>?=null,
+    var countryName:String?=null
 ):Serializable
 
 

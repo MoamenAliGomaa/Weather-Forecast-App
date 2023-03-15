@@ -51,7 +51,7 @@ class AlertDAOTest {
     }
 
     @Test
-    fun allAlerts() = runBlockingTest{
+    fun get_allAlerts() = runBlockingTest{
 
         val data = Alert(12323,13652,30.25,30.25,"Ismailia")
         val data1 =  Alert(12323,13652,30.25,30.25,"cairo")
@@ -72,7 +72,7 @@ class AlertDAOTest {
     }
 
     @Test
-    fun insertFavourite_insertOneItem_returnTheItem() = runBlockingTest {
+    fun insert_alert_insertOneItem_returnTheItem() = runBlockingTest {
         //Given
         val data =  Alert(12323,13652,30.25,30.25,"Ismailia")
 
@@ -85,12 +85,5 @@ class AlertDAOTest {
 
     }
 
-    @Test
-    fun insertAlert() {
-    }
 
-    @Test
-    fun deleteAlert(){
-
-    }
 }
