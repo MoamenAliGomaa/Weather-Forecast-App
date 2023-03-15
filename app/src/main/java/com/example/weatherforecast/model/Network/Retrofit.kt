@@ -4,6 +4,9 @@ package com.example.kotlinproducts.view
 import com.example.kotlinproducts.view.RetrofitHelper.retrofit
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Pojos.Welcome
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -17,6 +20,12 @@ interface SimpleService{
                                   @Query("appid") appId:String=Constants.APPID,
                                   @Query("lang") lang:String,
                                   @Query("units") units:String ): Welcome
+    @GET("onecall?")
+    suspend fun getCurrentWeatherTCallBack(@Query("lat") lat: String?,
+                                  @Query("lon") lon: String?,
+                                  @Query("appid") appId:String=Constants.APPID,
+                                  @Query("lang") lang:String,
+                                  @Query("units") units:String ): Response<Welcome>
 
 }
 object RetrofitHelper {

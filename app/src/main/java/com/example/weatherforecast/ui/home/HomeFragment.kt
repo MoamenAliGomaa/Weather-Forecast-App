@@ -26,11 +26,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
 import com.example.weatherforecast.databinding.FragmentHomeBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.ApiState
 import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.example.weatherforecast.ui.LoadingFragment.LoadingDialog
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationBarView
@@ -61,7 +67,9 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: RelativeLayout? = binding?.root
 
-        homeViewModel= ViewModelProvider(this,HomeViewModelFactory(requireContext())).get(HomeViewModel::class.java)
+        SharedManger.init(requireContext())
+        var repository= Repository.getInstance(LocalDataSource(requireContext()), RemoteDataSource())
+        homeViewModel= ViewModelProvider(this,HomeViewModelFactory(repository)).get(HomeViewModel::class.java)
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         val arg: HomeFragmentArgs by navArgs()

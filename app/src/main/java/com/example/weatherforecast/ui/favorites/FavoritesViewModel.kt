@@ -5,19 +5,20 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherforecast.model.IRepository
 import com.example.weatherforecast.model.Pojos.*
 import com.example.weatherforecast.model.Repository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 private const val TAG = "FavoritesViewModel"
-class FavoritesViewModel(var context: Context) : ViewModel() {
-    private var repository: Repository
+class FavoritesViewModel(var repository: IRepository) : ViewModel() {
+   // private var repository: Repository
     private var _welcomeFavoriteWeather: MutableStateFlow<LocalDataState>
      var welcomeFavoriteWeather: StateFlow<LocalDataState>
 
     init {
-        repository = Repository.getInstance(context)
+       // repository = Repository.getInstance(context)
         _welcomeFavoriteWeather= MutableStateFlow(LocalDataState.Loading)
         welcomeFavoriteWeather= _welcomeFavoriteWeather
     }
@@ -41,10 +42,10 @@ class FavoritesViewModel(var context: Context) : ViewModel() {
 
 
 
-class FavoritesViewModelFactory(val context: Context) : ViewModelProvider.Factory {
+class FavoritesViewModelFactory(val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(FavoritesViewModel::class.java)) {
-            FavoritesViewModel(context) as T
+            FavoritesViewModel(repository) as T
         } else {
             throw java.lang.IllegalArgumentException("View modle class not found")
         }

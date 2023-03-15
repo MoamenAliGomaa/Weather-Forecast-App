@@ -13,10 +13,15 @@ import androidx.annotation.RequiresApi
 import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.example.kotlinproducts.view.API
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,9 +32,12 @@ import kotlin.math.log
 private const val TAG = "MyWorker"
 class MyWorker(appContext: Context, workerParams: WorkerParameters) :
   CoroutineWorker(appContext, workerParams) {
-    var repository = Repository.getInstance(ctx = appContext )
+
+
 
     override  suspend fun doWork(): Result {
+        SharedManger.init(applicationContext)
+        var repository= Repository.getInstance(LocalDataSource(applicationContext), RemoteDataSource())
         val alertJson = inputData.getString(Constants.Alert)
         var alert = Gson().fromJson(alertJson, Alert::class.java)
         if(alert.endTime in alert.startTime ..alert.endTime)

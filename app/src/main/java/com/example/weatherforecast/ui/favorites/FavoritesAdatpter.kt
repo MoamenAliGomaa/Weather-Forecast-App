@@ -9,21 +9,28 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.databinding.FavoriteRowBinding
+import com.example.weatherforecast.model.IRepository
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Pojos.Welcome
 import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 
 private const val TAG = "FavoritesAdatpter"
 class FavoritesAdatpter(var welcomeList: List<Welcome>?, var context: Context, val onClick:(Welcome)->Unit,val onClickShow:(Welcome)->Unit):
     RecyclerView.Adapter<FavoritesAdatpter.ViewHolder>(){
     lateinit var binding: FavoriteRowBinding
-    lateinit var repository: Repository
+    lateinit var repository: IRepository
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater: LayoutInflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         binding = FavoriteRowBinding.inflate(inflater, parent, false)
-        repository=Repository.getInstance(context)
+        SharedManger.init(context)
+       repository=Repository.getInstance(LocalDataSource(context), RemoteDataSource())
         return ViewHolder(binding)
     }
 

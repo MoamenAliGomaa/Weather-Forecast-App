@@ -8,11 +8,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
 import com.example.weatherforecast.databinding.FragmentSettingsBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.model.Pojos.LocalDataState
 import com.example.weatherforecast.model.Pojos.Settings
-
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 
 
 private const val TAG = "SettingsFragment"
@@ -32,8 +38,11 @@ class SettingsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        SharedManger.init(requireContext())
+        var repository=Repository.getInstance(LocalDataSource(requireContext()),RemoteDataSource())
         val settingsViewModel =
-            ViewModelProvider(this, SettingsViewModelFactory(requireContext())).get(
+            ViewModelProvider(this, SettingsViewModelFactory(repository)).get(
                 SettingsViewModel::class.java
             )
 

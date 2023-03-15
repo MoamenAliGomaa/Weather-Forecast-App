@@ -3,80 +3,82 @@ package com.example.weatherforecast.model
 import android.content.Context
 import android.util.Log
 import com.example.kotlinproducts.view.API
+import com.example.kotlinproducts.view.SimpleService
+import com.example.weatherforecast.model.Network.IRemoteDataSource
 import com.example.weatherforecast.model.Pojos.*
 import com.example.weatherforecast.model.SharedPrefrences.SharedManger
+import com.example.weatherforecast.model.database.ILocalDataSource
 import com.example.weatherforecast.model.database.WeatherDataBse
 import kotlinx.coroutines.flow.*
+import retrofit2.Retrofit
 
 private const val TAG = "Repository"
-class Repository private constructor(var context: Context){
-    private var room:WeatherDataBse
-    private  var currentList: MutableStateFlow<LocalDataState> = MutableStateFlow(LocalDataState.Loading)
+class Repository private constructor(var room:ILocalDataSource,var retrofit: IRemoteDataSource) :
+    IRepository {
+  //  private var room:WeatherDataBse
+
 
     companion object{
         @Volatile
         private var INSTANCE: Repository? = null
-        fun getInstance (ctx: Context): Repository{
+        fun getInstance (room:ILocalDataSource,retrofit: IRemoteDataSource): Repository{
             return INSTANCE ?: synchronized(this) {
-                val instance =Repository(ctx)
+                val instance =Repository(room,retrofit)
                 INSTANCE = instance
 // return instance
                 instance }
         }
     }
-    init {
-        room=WeatherDataBse.getInstance(context)
 
-    }
     //retrofit
-    suspend fun getCurrentWeather(lat: String?, lon: String?, lang:String=Constants.LANG_EN, units:String= Constants.UNITS_DEFAULT)=
+    override suspend fun getCurrentWeather(lat: String?, lon: String?, lang:String, units:String)=
         flow{
-       emit(API.retrofitService.getCurrentWeather(lat = lat, lon =lon, lang =lang, units = units))
+       emit(retrofit.getCurrentWeather(lat = lat, lon =lon, lang =lang, units = units))
     }.catch {
             Log.e(TAG, "getCurrentWeather: "+this.toString() )
         }
 
     //shared
-    fun saveSettings(settings: Settings){
-        SharedManger.init(context)
+    override fun saveSettings(settings: Settings){
+       // SharedManger.init(context)
         SharedManger.saveSettings(settings)
     }
-    fun getSettings():Settings?{
-        SharedManger.init(context)
+    override fun getSettings():Settings?{
+       // SharedManger.init(context)
        return SharedManger.getSettings()
     }
-    fun saveAlertSettings(alertSettings: AlertSettings){
-        SharedManger.init(context)
+    override fun saveAlertSettings(alertSettings: AlertSettings){
+       // SharedManger.init(context)
         SharedManger.saveAlertSettings(alertSettings)
     }
-    fun getAlertSettings():AlertSettings?{
-        SharedManger.init(context)
+    override fun getAlertSettings():AlertSettings?{
+       // SharedManger.init(context)
         return SharedManger.getAlertSettings()
     }
     //room
 
 
-    suspend fun getFavoriteWeathers() = room.getWeatherDao().getFavoriteWeathers()
+    override suspend fun getFavoriteWeathers() = room.getFavoriteWeathers()
 
 
 
 
-    suspend fun insertWeather( welcome: Welcome):Long{
-        var l=room.getWeatherDao().insertWeather(welcome)
+    override suspend fun insertWeather(welcome: Welcome):Long{
+        var l=room.insertWeather(welcome)
         Log.e(TAG, "insertWeather: "+ l )
       return  l
     }
 
 
-    suspend fun deleteFavorite(welcome: Welcome){
-        room.getWeatherDao().deleteFavorite(welcome)
+    override suspend fun deleteFavorite(welcome: Welcome){
+        room.deleteFavorite(welcome)
     }
-    suspend fun getCurrentWeatherDB()=room.getWeatherDao().getCurrentWeathers()
-    suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)= room.getWeatherDao().insertOrUpdateCurrentWeather(welcome)
+    override suspend fun getCurrentWeatherDB()=room.getCurrentWeathers()
+    override suspend fun insertOrUpdateCurrentWeather(welcome: Welcome)= room.insertOrUpdateCurrentWeather(welcome)
     //alert room
-    suspend fun insertAlert(alert: Alert)=room.alertDao().insertAlert(alert)
-    suspend fun deleteAlert(alert: Alert)=room.alertDao().deleteAlert(alert)
-    fun getAlerts()=room.alertDao().getAlerts()
-    fun getAlert(id: Long)=room.alertDao().getAlert(id!!)
+    override suspend fun insertAlert(alert: Alert)=room.insertAlert(alert)
+    override suspend fun deleteAlert(alert: Alert)=room.deleteAlert(alert)
+    override fun getAlerts()=room.getAlerts()
+    override fun getAlert(id: Long)=room.getAlert(id!!)
 
 }

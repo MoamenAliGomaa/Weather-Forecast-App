@@ -16,10 +16,17 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.AlertSettings
+import com.example.weatherforecast.model.Pojos.LocalDataState
 import com.example.weatherforecast.model.Pojos.Settings
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.example.weatherforecast.ui.dashboard.SettingsFragmentDirections
 import com.example.weatherforecast.ui.notifications.AlertDialogFragment
 import com.google.android.gms.common.api.Status
@@ -52,8 +59,11 @@ private var settings: Settings?=null
     ): View {
         var v:View=inflater.inflate(R.layout.fragment_maps, container, false)
         getCurrentWeatherBtn=v.findViewById(R.id.btnGetCurrentWeather)
+
+        SharedManger.init(requireContext())
+        var repository= Repository.getInstance(LocalDataSource(requireContext()),RemoteDataSource())
         mapsViewModel= ViewModelProvider(this,
-            MapsViewModelFactory(requireContext().applicationContext)
+            MapsViewModelFactory(repository)
         ).get(MapsViewModel::class.java)
         settings=mapsViewModel.getSettings()
         return v

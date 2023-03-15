@@ -12,9 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.databinding.FragmentFavoritesBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.LocalDataState
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.example.weatherforecast.ui.dashboard.SettingsFragmentDirections
 import kotlinx.coroutines.launch
 
@@ -26,7 +32,6 @@ class FavoritesFragment : Fragment() {
     lateinit var progressDialog: ProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    favoritesViewModel=ViewModelProvider(this,FavoritesViewModelFactory(requireContext())).get(FavoritesViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -35,7 +40,9 @@ class FavoritesFragment : Fragment() {
     ): View? {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        favoritesViewModel=ViewModelProvider(this,FavoritesViewModelFactory(requireContext())).get(FavoritesViewModel::class.java)
+        SharedManger.init(requireContext())
+        var repository= Repository.getInstance(LocalDataSource(requireContext()), RemoteDataSource())
+        favoritesViewModel=ViewModelProvider(this,FavoritesViewModelFactory(repository)).get(FavoritesViewModel::class.java)
         favoritesViewModel.getFavoriteWeathers()
         if (Utils.isOnline(requireContext()))
         {

@@ -26,11 +26,16 @@ import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.R
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -47,8 +52,8 @@ class AlarmReciver : BroadcastReceiver() {
     }
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceive(context: Context, intent: Intent) {
-
-        val repo=Repository.getInstance(context)
+        SharedManger.init(context)
+        var repo= Repository.getInstance(LocalDataSource(context), RemoteDataSource())
         var alertSettings=repo.getAlertSettings()
         var alertJson = intent.getStringExtra(Constants.Alert)
         var alert = Gson().fromJson(alertJson, Alert::class.java)

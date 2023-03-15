@@ -2,6 +2,7 @@ package com.example.weatherforecast.ui.notifications
 
 import android.content.Context
 import androidx.lifecycle.*
+import com.example.weatherforecast.model.IRepository
 import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.AlertSettings
 import com.example.weatherforecast.model.Pojos.LocalDataState
@@ -14,13 +15,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class NotificationsViewModel(context: Context) : ViewModel() {
-    private var repository: Repository
+class NotificationsViewModel(var repository: IRepository) : ViewModel() {
+   // private var repository: Repository
     private var _alertFlow: MutableStateFlow<LocalDataStateAlerts>
     var alertFlow: StateFlow<LocalDataStateAlerts>
 
     init {
-        repository = Repository.getInstance(context)
+       // repository = Repository.getInstance(context)
         _alertFlow= MutableStateFlow(LocalDataStateAlerts.Loading)
         alertFlow= _alertFlow
     }
@@ -53,10 +54,10 @@ class NotificationsViewModel(context: Context) : ViewModel() {
 
 }
 
-class NotificationsViewModelFactory(val context: Context) : ViewModelProvider.Factory {
+class NotificationsViewModelFactory(val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(NotificationsViewModel::class.java)) {
-            NotificationsViewModel(context) as T
+            NotificationsViewModel(repository) as T
         } else {
             throw java.lang.IllegalArgumentException("View modle class not found")
         }

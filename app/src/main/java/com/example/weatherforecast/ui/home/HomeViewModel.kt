@@ -2,6 +2,7 @@ package com.example.weatherforecast.ui.home
 
 import android.content.Context
 import androidx.lifecycle.*
+import com.example.weatherforecast.model.IRepository
 import com.example.weatherforecast.model.Pojos.*
 
 import com.example.weatherforecast.model.Repository
@@ -11,15 +12,15 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "HomeViewModel"
 
-class HomeViewModel(var context: Context) : ViewModel() {
-    private var repository: Repository
+class HomeViewModel(var repository: IRepository) : ViewModel() {
+//    private var repository: Repository
     private var _welcomeCurrentWeather: MutableStateFlow<ApiState>
      var welcomeCurrentWeather: StateFlow<ApiState>
     private var _welcomeCurrentWeatherLocal: MutableStateFlow<ApiState>
     var welcomeCurrentWeatherLocal: StateFlow<ApiState>
 
     init {
-        repository = Repository.getInstance(context)
+//        repository = Repository.getInstance(context)
         _welcomeCurrentWeather= MutableStateFlow(ApiState.Loading)
         welcomeCurrentWeather= _welcomeCurrentWeather
         _welcomeCurrentWeatherLocal=MutableStateFlow(ApiState.Loading)
@@ -73,10 +74,10 @@ class HomeViewModel(var context: Context) : ViewModel() {
 
 }
 
-class HomeViewModelFactory(val context: Context) : ViewModelProvider.Factory {
+class HomeViewModelFactory(val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            HomeViewModel(context) as T
+            HomeViewModel(repository) as T
         }
         else {
             throw java.lang.IllegalArgumentException("View modle class not found")

@@ -19,12 +19,18 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.work.*
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.databinding.AlertDialogFragmentBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Alert
 import com.example.weatherforecast.model.Pojos.Constants
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
 import com.example.weatherforecast.model.Utils.getCurrentDate
 import com.example.weatherforecast.model.Utils.getCurrentTime
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import com.google.gson.Gson
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -65,9 +71,10 @@ class AlertDialogFragment : DialogFragment() {
 
         getDialog()?.requestWindowFeature(STYLE_NO_TITLE)
         setCancelable(false)
-
+        SharedManger.init(requireContext())
+        var repository= Repository.getInstance(LocalDataSource(requireContext()),RemoteDataSource())
         val notificationsViewModel =
-            ViewModelProvider(this,NotificationsViewModelFactory(requireContext())).get(NotificationsViewModel::class.java)
+            ViewModelProvider(this,NotificationsViewModelFactory(repository)).get(NotificationsViewModel::class.java)
         var alertSettings=notificationsViewModel.getAlertSettings()
         calendarStart=Calendar.getInstance()
         calenderEnd=Calendar.getInstance()

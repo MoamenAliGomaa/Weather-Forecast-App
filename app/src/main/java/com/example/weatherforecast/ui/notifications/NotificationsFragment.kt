@@ -22,10 +22,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkManager
+import com.example.kotlinproducts.view.API
 import com.example.weatherforecast.databinding.FragmentNotificationsBinding
+import com.example.weatherforecast.model.Network.RemoteDataSource
 import com.example.weatherforecast.model.Pojos.Constants
 import com.example.weatherforecast.model.Pojos.LocalDataStateAlerts
+import com.example.weatherforecast.model.Repository
+import com.example.weatherforecast.model.SharedPrefrences.SharedManger
 import com.example.weatherforecast.model.Utils
+import com.example.weatherforecast.model.database.LocalDataSource
+import com.example.weatherforecast.model.database.WeatherDataBse
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
@@ -47,8 +53,10 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         canDrawOverApps()
+        SharedManger.init(requireContext())
+        var repository= Repository.getInstance(LocalDataSource(requireContext()), RemoteDataSource())
         val notificationsViewModel =
-            ViewModelProvider(this,NotificationsViewModelFactory(requireContext())).get(NotificationsViewModel::class.java)
+            ViewModelProvider(this,NotificationsViewModelFactory(repository)).get(NotificationsViewModel::class.java)
         notificationsViewModel.getAlerts()
         progressDialog= Utils.progressDialog(requireContext())
         binding.btnAddToAlerts.setOnClickListener{
